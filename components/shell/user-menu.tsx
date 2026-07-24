@@ -20,7 +20,10 @@ function initialsFor(email: string) {
 export function UserMenu({ email }: { email: string }) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring">
+      <DropdownMenuTrigger
+        aria-label="Account menu"
+        className="rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      >
         <Avatar className="size-8">
           <AvatarFallback className="text-xs">{initialsFor(email)}</AvatarFallback>
         </Avatar>

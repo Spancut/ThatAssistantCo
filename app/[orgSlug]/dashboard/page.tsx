@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
-import { Users, ClipboardList, Compass, Radar } from "lucide-react";
+import { Users, ClipboardList, Compass, Radar, Contact } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getWorkspaceBySlug } from "@/lib/server/workspaces";
+import { countActiveClientProfiles } from "@/lib/server/clients";
+import { countContacts } from "@/lib/server/contacts";
 import { WorkspaceSummaryCard } from "@/components/dashboard/workspace-summary-card";
 import { ComingSoonCard } from "@/components/dashboard/coming-soon-card";
+import { EntitySummaryCard } from "@/components/dashboard/entity-summary-card";
 
 export const metadata: Metadata = { title: "Dashboard — ThatAssistant" };
 
@@ -24,6 +27,9 @@ export default async function DashboardPage({
   if (!workspace) notFound();
 
   const isFounder = workspace.product_mode === "founder";
+  const entityCount = isFounder
+    ? await countContacts(supabase, workspace.id)
+    : await countActiveClientProfiles(supabase, workspace.id);
 
   return (
     <div className="space-y-8">
@@ -45,11 +51,13 @@ export default async function DashboardPage({
         <div className="mt-3 grid gap-4 sm:grid-cols-2">
           {isFounder ? (
             <>
-              <ComingSoonCard
-                icon={Users}
+              <EntitySummaryCard
+                icon={Contact}
                 title="Contact & Lead Hub"
-                description="Track leads, customers, and relationship stages, with last interaction and next follow-up."
-                milestone="Milestone 2"
+                description="Track leads, customers, and relationship stages."
+                count={entityCount}
+                countLabel={entityCount === 1 ? "contact" : "contacts"}
+                href={`/${orgSlug}/contacts`}
               />
               <ComingSoonCard
                 icon={Radar}
@@ -60,11 +68,13 @@ export default async function DashboardPage({
             </>
           ) : (
             <>
-              <ComingSoonCard
+              <EntitySummaryCard
                 icon={Users}
                 title="Client Hub"
-                description="Client profiles with brand voice, services, preferences, restrictions, and approval rules."
-                milestone="Milestone 2"
+                description="Client profiles with brand voice, preferences, and key facts."
+                count={entityCount}
+                countLabel={entityCount === 1 ? "client" : "clients"}
+                href={`/${orgSlug}/clients`}
               />
               <ComingSoonCard
                 icon={ClipboardList}

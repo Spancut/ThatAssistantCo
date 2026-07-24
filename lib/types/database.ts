@@ -1,6 +1,7 @@
 /**
- * Hand-written to match supabase/migrations/20260724000001_init_platform_schema.sql
- * and 20260724000002_billing_entitlements_notifications.sql.
+ * Hand-written to match supabase/migrations/20260724000001_init_platform_schema.sql,
+ * 20260724000002_billing_entitlements_notifications.sql, and
+ * 20260724000003_clients_contacts_knowledge.sql.
  * Once a live project exists, regenerate with:
  *   npx supabase gen types typescript --linked > lib/types/database.ts
  * and re-apply any manual additions.
@@ -15,6 +16,13 @@ export type MembershipRole =
   | "certified_operator";
 export type SubscriptionPlan = "trial" | "starter" | "pro";
 export type SubscriptionStatus = "active" | "past_due" | "canceled";
+export type PipelineStage =
+  | "new"
+  | "contacted"
+  | "qualified"
+  | "proposal"
+  | "customer"
+  | "dormant";
 
 export interface Database {
   public: {
@@ -241,6 +249,129 @@ export interface Database {
         };
         Relationships: [];
       };
+      client_profiles: {
+        Row: {
+          id: string;
+          org_id: string;
+          name: string;
+          brand_voice: string | null;
+          preferences: Record<string, unknown>;
+          key_facts: Record<string, unknown>;
+          archived_at: string | null;
+          created_by: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          org_id: string;
+          name: string;
+          brand_voice?: string | null;
+          preferences?: Record<string, unknown>;
+          key_facts?: Record<string, unknown>;
+          archived_at?: string | null;
+          created_by: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          org_id?: string;
+          name?: string;
+          brand_voice?: string | null;
+          preferences?: Record<string, unknown>;
+          key_facts?: Record<string, unknown>;
+          archived_at?: string | null;
+          created_by?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      contacts: {
+        Row: {
+          id: string;
+          org_id: string;
+          name: string;
+          company: string | null;
+          email: string | null;
+          phone: string | null;
+          pipeline_stage: PipelineStage;
+          source: string | null;
+          notes: string | null;
+          created_by: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          org_id: string;
+          name: string;
+          company?: string | null;
+          email?: string | null;
+          phone?: string | null;
+          pipeline_stage?: PipelineStage;
+          source?: string | null;
+          notes?: string | null;
+          created_by: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          org_id?: string;
+          name?: string;
+          company?: string | null;
+          email?: string | null;
+          phone?: string | null;
+          pipeline_stage?: PipelineStage;
+          source?: string | null;
+          notes?: string | null;
+          created_by?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      knowledge_base_items: {
+        Row: {
+          id: string;
+          org_id: string;
+          title: string;
+          content: string;
+          tags: string[];
+          linked_client_profile_id: string | null;
+          linked_contact_id: string | null;
+          created_by: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          org_id: string;
+          title: string;
+          content?: string;
+          tags?: string[];
+          linked_client_profile_id?: string | null;
+          linked_contact_id?: string | null;
+          created_by: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          org_id?: string;
+          title?: string;
+          content?: string;
+          tags?: string[];
+          linked_client_profile_id?: string | null;
+          linked_contact_id?: string | null;
+          created_by?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -271,6 +402,7 @@ export interface Database {
       membership_role: MembershipRole;
       subscription_plan: SubscriptionPlan;
       subscription_status: SubscriptionStatus;
+      pipeline_stage: PipelineStage;
     };
   };
 }

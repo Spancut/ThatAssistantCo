@@ -26,15 +26,17 @@ Built ahead of Milestone 3 so every AI call site is required to check entitlemen
 
 `create_workspace()` also provisions a trial `subscriptions` row and a generous default `entitlements` set (`ai_generations_per_month: 200`, `max_clients`/`max_contacts: unlimited`) atomically. `create_notification(org_id, user_id, type, payload)` is a `SECURITY DEFINER` function and the only write path into `notifications` — see [decisions.md](decisions.md). [lib/server/entitlements.ts](../lib/server/entitlements.ts) (`checkEntitlement`, `recordUsage`) is the only supported way to read/write entitlement state; no workflow or route queries these tables directly.
 
-## Milestone 2 — planned (Knowledge & Relationships)
+## Milestone 2 — implemented (Knowledge & Relationships)
 
-| Table | Purpose | Product |
-|---|---|---|
-| `client_profiles` | A Partner's client: brand voice, services, preferences, restrictions, approval rules, recurring responsibilities | Partner |
-| `contacts` | A Founder's lead/customer/contact: relationship type, lifecycle stage, last interaction, next follow-up | Founder |
-| `knowledge_records` | Freeform structured knowledge attached to a client or contact, used to assemble AI context | Both |
-| `documents` | Metadata for uploaded files (Supabase Storage holds the bytes) | Both |
-| `notes`, `tasks` | Freeform notes and trackable tasks, optionally linked to a client/contact | Both |
+| Table | Purpose | Product | Key columns |
+|---|---|---|---|
+| `client_profiles` | A Partner's client | Partner | `org_id`, `name`, `brand_voice`, `preferences` (jsonb), `key_facts` (jsonb), `archived_at`, `created_by`, timestamps |
+| `contacts` | A Founder's lead/customer/contact | Founder | `org_id`, `name`, `company`, `email`, `phone`, `pipeline_stage`, `source`, `notes`, `created_by`, timestamps |
+| `knowledge_base_items` | Freeform knowledge, linked to at most one client OR one contact (never both — `knowledge_base_items_single_link` check constraint) | Both | `org_id`, `title`, `content`, `tags` (text[]), `linked_client_profile_id`, `linked_contact_id`, `created_by`, timestamps |
+
+`preferences`/`key_facts` are jsonb but edited in the MVP as a single freeform `{ notes: string }` shape — simple textareas, not structured forms. This keeps the schema forward-compatible with richer structured editing later without a migration. RLS on all three matches every other workspace-scoped table (member-required); unlike `organizations`/`memberships`, ordinary members can insert/update rows directly — there's no `create_workspace()`-style RPC gate, since these are ordinary CRUD entities, not tenant-boundary objects. `client_profiles` uses a soft `archived_at` rather than hard delete; `knowledge_base_items` supports a real delete.
+
+Not built in Milestone 2 (deferred, not part of the shared platform's minimum): `documents` (file metadata / Storage), `notes`/`tasks` as separate tables (contacts already has an inline `notes` field; client_profiles' "recurring responsibilities" live in `preferences` for now), a distinct `knowledge_records` table (folded into `knowledge_base_items`).
 
 ## Milestone 3 — planned (AI Workbench & Outputs)
 
@@ -70,4 +72,4 @@ Plan-derived entitlements (`subscriptions`/`entitlements`) were built early, in 
 
 ## Isolation guarantee
 
-No table in this model is ever queried without an RLS policy scoping it to `org_id IN (SELECT org_id FROM memberships WHERE user_id = auth.uid())` (or a narrower policy for owner/admin-only actions). This is verified for Milestone 1 by creating two workspaces under two different users and confirming neither can read the other's `organizations`, `memberships`, or `audit_events` rows.
+No table in this model is ever queried without an RLS policy scoping it to `org_id IN (SELECT org_id FROM memberships WHERE user_id = auth.uid())` (or a narrower policy for owner/admin-only actions). Verified live for every table implemented so far — Milestone 1 (`organizations`, `memberships`, `audit_events`), Milestone 1.5 (`subscriptions`, `entitlements`, `usage_events`, `notifications`), and Milestone 2 (`client_profiles`, `contacts`, `knowledge_base_items`) — by creating workspaces under different users and confirming neither reads, writes, updates, or deletes the other's rows. See docs/build-plan.md for the specific checks run per milestone.

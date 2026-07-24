@@ -160,6 +160,250 @@ async function ensureBilling(orgId: string) {
   console.log("  subscription + entitlements ensured");
 }
 
+// ---------------------------------------------------------------------------
+// Milestone 2 seed content: realistic clients (Partner) / contacts (Founder)
+// + a few linked knowledge_base_items, so every new screen has real content
+// on first login. Idempotent by name, so re-running `npm run seed` doesn't
+// duplicate rows.
+// ---------------------------------------------------------------------------
+
+type ClientSeed = {
+  name: string;
+  brandVoice: string;
+  preferencesNotes: string;
+  keyFactsNotes: string;
+  knowledgeItem: { title: string; content: string; tags: string[] };
+};
+
+const CLIENT_SEEDS: ClientSeed[] = [
+  {
+    name: "Brightleaf Bakery",
+    brandVoice: "Warm, friendly, a little playful — think handwritten notes, not corporate memos.",
+    preferencesNotes: "Reviews all social copy before it goes out. Prefers Tuesday check-ins.",
+    keyFactsNotes: "Family-owned since 2011. Two locations. Owner's name is Maria.",
+    knowledgeItem: {
+      title: "Do not mention gluten-free options",
+      content: "They stopped offering a gluten-free line in 2025 — don't reference it in any copy.",
+      tags: ["constraint"],
+    },
+  },
+  {
+    name: "Nordholt Legal Group",
+    brandVoice: "Formal, precise, no contractions. Every claim needs to be defensible.",
+    preferencesNotes: "Legal review required on anything mentioning case outcomes.",
+    keyFactsNotes: "Boutique employment law firm. 6 attorneys. Founded by Erik Nordholt.",
+    knowledgeItem: {
+      title: "Preferred CTA phrasing",
+      content: "Use \"Schedule a confidential consultation\" rather than \"Book a call\".",
+      tags: ["voice", "cta"],
+    },
+  },
+  {
+    name: "Cedar & Vine Landscaping",
+    brandVoice: "Down-to-earth, practical, seasonal.",
+    preferencesNotes: "Wants a monthly newsletter draft by the 25th.",
+    keyFactsNotes: "Residential + light commercial. Busy season is April through October.",
+    knowledgeItem: {
+      title: "Service area",
+      content: "Only serves the greater Millbrook County area — don't imply broader coverage.",
+      tags: ["facts"],
+    },
+  },
+];
+
+type ContactSeed = {
+  name: string;
+  company: string;
+  email: string;
+  pipelineStage: Database["public"]["Enums"]["pipeline_stage"];
+  source: string;
+  knowledgeItem?: { title: string; content: string; tags: string[] };
+};
+
+const CONTACT_SEEDS: ContactSeed[] = [
+  {
+    name: "Jordan Reyes",
+    company: "Skyline Coffee Roasters",
+    email: "jordan@skylineroasters.example.com",
+    pipelineStage: "new",
+    source: "Website form",
+    knowledgeItem: {
+      title: "Interested in weekly specials automation",
+      content: "Mentioned wanting help drafting weekly specials posts. Budget-conscious.",
+      tags: ["interest"],
+    },
+  },
+  {
+    name: "Priya Natarajan",
+    company: "Natarajan & Co",
+    email: "priya@natarajanco.example.com",
+    pipelineStage: "contacted",
+    source: "Referral",
+    knowledgeItem: {
+      title: "Referred by Jordan Reyes",
+      content: "Came through Jordan's referral — mention that in follow-up.",
+      tags: ["referral"],
+    },
+  },
+  {
+    name: "Tomas Vidal",
+    company: "Vidal Events Co",
+    email: "tomas@vidalevents.example.com",
+    pipelineStage: "contacted",
+    source: "Website form",
+  },
+  {
+    name: "Marcus Webb",
+    company: "Webb Fitness Studio",
+    email: "marcus@webbfitness.example.com",
+    pipelineStage: "qualified",
+    source: "Instagram DM",
+  },
+  {
+    name: "Elena Cho",
+    company: "Cho Interiors",
+    email: "elena@chointeriors.example.com",
+    pipelineStage: "proposal",
+    source: "Trade show",
+    knowledgeItem: {
+      title: "Proposal sent 2026-07-20",
+      content: "Sent a 3-month content retainer proposal. Follow up if no response by end of month.",
+      tags: ["proposal"],
+    },
+  },
+  {
+    name: "Devon Okafor",
+    company: "Okafor Consulting",
+    email: "devon@okaforconsulting.example.com",
+    pipelineStage: "customer",
+    source: "Referral",
+    knowledgeItem: {
+      title: "Renewal date",
+      content: "Annual contract renews in January. Check in during Q4.",
+      tags: ["renewal"],
+    },
+  },
+  {
+    name: "Sam Patterson",
+    company: "Patterson Auto Repair",
+    email: "sam@pattersonauto.example.com",
+    pipelineStage: "customer",
+    source: "Google search",
+  },
+  {
+    name: "Ruth Iversen",
+    company: "Iversen Family Dentistry",
+    email: "ruth@iversendentistry.example.com",
+    pipelineStage: "dormant",
+    source: "Cold outreach",
+  },
+];
+
+async function ensureClients(orgId: string, userId: string) {
+  for (const seed of CLIENT_SEEDS) {
+    const { data: existing } = await admin
+      .from("client_profiles")
+      .select("id")
+      .eq("org_id", orgId)
+      .eq("name", seed.name)
+      .maybeSingle();
+
+    let clientId = existing?.id;
+
+    if (!clientId) {
+      const { data: created, error } = await admin
+        .from("client_profiles")
+        .insert({
+          org_id: orgId,
+          created_by: userId,
+          name: seed.name,
+          brand_voice: seed.brandVoice,
+          preferences: { notes: seed.preferencesNotes },
+          key_facts: { notes: seed.keyFactsNotes },
+        })
+        .select("id")
+        .single();
+      if (error) throw error;
+      clientId = created.id;
+      console.log(`  created client: ${seed.name}`);
+    }
+
+    const { data: existingItem } = await admin
+      .from("knowledge_base_items")
+      .select("id")
+      .eq("org_id", orgId)
+      .eq("title", seed.knowledgeItem.title)
+      .maybeSingle();
+
+    if (!existingItem) {
+      const { error } = await admin.from("knowledge_base_items").insert({
+        org_id: orgId,
+        created_by: userId,
+        title: seed.knowledgeItem.title,
+        content: seed.knowledgeItem.content,
+        tags: seed.knowledgeItem.tags,
+        linked_client_profile_id: clientId,
+      });
+      if (error) throw error;
+    }
+  }
+  console.log(`  ${CLIENT_SEEDS.length} client(s) ensured`);
+}
+
+async function ensureContacts(orgId: string, userId: string) {
+  for (const seed of CONTACT_SEEDS) {
+    const { data: existing } = await admin
+      .from("contacts")
+      .select("id")
+      .eq("org_id", orgId)
+      .eq("name", seed.name)
+      .maybeSingle();
+
+    let contactId = existing?.id;
+
+    if (!contactId) {
+      const { data: created, error } = await admin
+        .from("contacts")
+        .insert({
+          org_id: orgId,
+          created_by: userId,
+          name: seed.name,
+          company: seed.company,
+          email: seed.email,
+          pipeline_stage: seed.pipelineStage,
+          source: seed.source,
+        })
+        .select("id")
+        .single();
+      if (error) throw error;
+      contactId = created.id;
+      console.log(`  created contact: ${seed.name} (${seed.pipelineStage})`);
+    }
+
+    if (seed.knowledgeItem) {
+      const { data: existingItem } = await admin
+        .from("knowledge_base_items")
+        .select("id")
+        .eq("org_id", orgId)
+        .eq("title", seed.knowledgeItem.title)
+        .maybeSingle();
+
+      if (!existingItem) {
+        const { error } = await admin.from("knowledge_base_items").insert({
+          org_id: orgId,
+          created_by: userId,
+          title: seed.knowledgeItem.title,
+          content: seed.knowledgeItem.content,
+          tags: seed.knowledgeItem.tags,
+          linked_contact_id: contactId,
+        });
+        if (error) throw error;
+      }
+    }
+  }
+  console.log(`  ${CONTACT_SEEDS.length} contact(s) ensured`);
+}
+
 async function main() {
   console.log("Seeding dev data (never run against production)...");
   for (const seed of SEEDS) {
@@ -168,6 +412,12 @@ async function main() {
     if (!user) throw new Error(`Failed to resolve user for ${seed.email}`);
     const orgId = await ensureWorkspace(seed, user.id);
     await ensureBilling(orgId);
+
+    if (seed.productMode === "partner") {
+      await ensureClients(orgId, user.id);
+    } else {
+      await ensureContacts(orgId, user.id);
+    }
   }
   console.log(`\nDone. Dev login password for seeded users: ${DEV_PASSWORD}`);
 }

@@ -2,6 +2,14 @@
 
 Lightweight decision log. Newest first.
 
+## 2026-07-24 — Nav labels stay short ("Clients"/"Contacts"), distinct from page titles
+
+`ModeNav` links to the Client Hub / Contact & Lead Hub as "Clients" / "Contacts", not their full page titles. Two reasons: it reads better as a short nav label, and it avoids a real problem — the dashboard's summary card and the hub page's own `<h1>` both use the full name ("Client Hub", "Contact & Lead Hub"), and `CardTitle` renders a `<div>`, not a semantic heading, so Playwright's `getByText("Client Hub")` can't be disambiguated by role the way `getByRole("heading", ...)` disambiguates the page's `<h1>` from the nav link. Keeping the nav label a different string entirely sidesteps the collision rather than papering over it with `.first()` in every test.
+
+## 2026-07-24 — Test cleanup must delete the org before the user
+
+Discovered via two stray "notification smoke" workspaces left permanently in the live Supabase project: `organizations.created_by` references `auth.users(id)` with no cascade (deliberate — an org shouldn't lose its creator record just because the row happens to still exist), so `admin.auth.admin.deleteUser()` fails with a foreign-key violation for any test user who created a workspace, unless the organization is deleted first (which cascades away every org-scoped table and clears the path). The failure was silent because the test's cleanup call wasn't checking the returned error. Fixed in `e2e/helpers.ts` (`deleteTestUserAndOrgs`), applied to every Playwright test that creates a throwaway user via the Admin API.
+
 ## 2026-07-24 — `org_id`, not `workspace_id`, on the new billing/notification tables
 
 The entitlements-foundation spec described the new tables' tenant column as `workspace_id`. Every existing workspace-scoped table (`memberships`, `audit_events`) uses `org_id` against `organizations.id` — "workspace" is the product-facing term for what the schema calls an organization, not a second underlying concept. Introducing `workspace_id` alongside `org_id` would make every future cross-table join/RLS policy inconsistent for no benefit. `subscriptions`, `entitlements`, `usage_events`, and `notifications` all use `org_id`. The public TypeScript helpers (`checkEntitlement`, `recordUsage`, `createNotification`) still take `workspaceId` as their parameter name, since that's user-facing API surface, not a DB column — so callers writing Milestone 3 code can use the exact signature from the spec regardless of this internal naming choice. Cheap to rename later if this guess was wrong (brand-new tables, no data yet).

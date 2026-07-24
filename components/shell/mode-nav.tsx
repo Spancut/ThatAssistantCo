@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Compass, Settings } from "lucide-react";
+import { LayoutDashboard, Compass, Settings, Users, Contact } from "lucide-react";
 import type { ProductMode } from "@/lib/types/database";
 import { cn } from "@/lib/utils";
 
@@ -13,12 +13,19 @@ type NavItem = {
 };
 
 function navItemsFor(orgSlug: string, productMode: ProductMode): NavItem[] {
-  const overview: NavItem =
-    productMode === "founder"
-      ? { label: "Command Centre", href: `/${orgSlug}/dashboard`, icon: Compass }
-      : { label: "Dashboard", href: `/${orgSlug}/dashboard`, icon: LayoutDashboard };
+  if (productMode === "founder") {
+    return [
+      { label: "Command Centre", href: `/${orgSlug}/dashboard`, icon: Compass },
+      { label: "Contacts", href: `/${orgSlug}/contacts`, icon: Contact },
+      { label: "Settings", href: `/${orgSlug}/settings`, icon: Settings },
+    ];
+  }
 
-  return [overview, { label: "Settings", href: `/${orgSlug}/settings`, icon: Settings }];
+  return [
+    { label: "Dashboard", href: `/${orgSlug}/dashboard`, icon: LayoutDashboard },
+    { label: "Clients", href: `/${orgSlug}/clients`, icon: Users },
+    { label: "Settings", href: `/${orgSlug}/settings`, icon: Settings },
+  ];
 }
 
 export function ModeNav({ orgSlug, productMode }: { orgSlug: string; productMode: ProductMode }) {
@@ -28,7 +35,7 @@ export function ModeNav({ orgSlug, productMode }: { orgSlug: string; productMode
   return (
     <nav className="flex items-center gap-1">
       {items.map((item) => {
-        const active = pathname === item.href;
+        const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
         const Icon = item.icon;
         return (
           <Link

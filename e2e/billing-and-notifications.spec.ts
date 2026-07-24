@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
+import { deleteTestUserAndOrgs } from "./helpers";
 
 if (typeof process.loadEnvFile === "function") {
   try {
@@ -32,7 +33,8 @@ test.describe("Billing and notifications", () => {
     await expect(page.getByText("active", { exact: true })).toBeVisible();
     await expect(page.getByText("AI generations / month")).toBeVisible();
     await expect(page.getByText(/\d+ \/ 200 used/)).toBeVisible();
-    await expect(page.getByText("Clients")).toBeVisible();
+    // Scoped to <main> — "Clients" also appears as a nav link in <header>.
+    await expect(page.getByRole("main").getByText("Clients")).toBeVisible();
     // max_clients and max_contacts are both seeded unlimited.
     await expect(page.getByText(/unlimited/)).toHaveCount(2);
   });
@@ -70,7 +72,10 @@ test.describe("Billing and notifications", () => {
 
       await expect(page.getByText("Workspace created")).toBeVisible();
     } finally {
-      await admin.auth.admin.deleteUser(created.user.id);
+      // See e2e/helpers.ts: deleting the user directly silently fails
+      // because they created a workspace (organizations.created_by has no
+      // cascade) — this was discovered as a real bug, not a hypothetical.
+      await deleteTestUserAndOrgs(admin, created.user.id);
     }
   });
 });
