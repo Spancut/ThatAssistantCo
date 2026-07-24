@@ -1,6 +1,13 @@
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
-import { deleteTestUserAndOrgs, signOut } from "./helpers";
+import {
+  DEMO_PASSWORD,
+  FOUNDER_DEMO_EMAIL,
+  PARTNER_DEMO_EMAIL,
+  deleteTestUserAndOrgs,
+  signOut,
+  testEmail,
+} from "./helpers";
 
 if (typeof process.loadEnvFile === "function") {
   try {
@@ -12,7 +19,6 @@ if (typeof process.loadEnvFile === "function") {
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-const DEMO_PASSWORD = "dev-password-only-123!";
 
 function admin() {
   return createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
@@ -20,13 +26,13 @@ function admin() {
   });
 }
 
-async function createConfirmedUser(emailPrefix: string) {
-  const email = `${emailPrefix}-${Date.now()}@thatassistant.dev`;
+async function createConfirmedUser(label: string) {
+  const email = testEmail(label);
   const { data, error } = await admin().auth.admin.createUser({
     email,
     password: DEMO_PASSWORD,
     email_confirm: true,
-    user_metadata: { full_name: emailPrefix },
+    user_metadata: { full_name: label },
   });
   if (error) throw error;
   return { email, userId: data.user.id };
@@ -40,7 +46,7 @@ test.describe("Client/contact/knowledge cross-org isolation", () => {
 
     // Create the client as the seeded partner-demo user.
     await page.goto("/login");
-    await page.getByLabel("Email").fill("partner-demo@thatassistant.dev");
+    await page.getByLabel("Email").fill(PARTNER_DEMO_EMAIL);
     await page.getByLabel("Password").fill(DEMO_PASSWORD);
     await page.getByRole("button", { name: "Sign in" }).click();
     await expect(page).toHaveURL(/\/partner-demo\/dashboard$/, { timeout: 15_000 });
@@ -87,7 +93,7 @@ test.describe("Client/contact/knowledge cross-org isolation", () => {
     const contactName = `Cross-Org Test Contact ${Date.now()}`;
 
     await page.goto("/login");
-    await page.getByLabel("Email").fill("founder-demo@thatassistant.dev");
+    await page.getByLabel("Email").fill(FOUNDER_DEMO_EMAIL);
     await page.getByLabel("Password").fill(DEMO_PASSWORD);
     await page.getByRole("button", { name: "Sign in" }).click();
     await expect(page).toHaveURL(/\/founder-demo\/dashboard$/, { timeout: 15_000 });
@@ -131,7 +137,7 @@ test.describe("Pipeline stage changes", () => {
     const contactName = `Stage Test Contact ${Date.now()}`;
 
     await page.goto("/login");
-    await page.getByLabel("Email").fill("founder-demo@thatassistant.dev");
+    await page.getByLabel("Email").fill(FOUNDER_DEMO_EMAIL);
     await page.getByLabel("Password").fill(DEMO_PASSWORD);
     await page.getByRole("button", { name: "Sign in" }).click();
     await expect(page).toHaveURL(/\/founder-demo\/dashboard$/, { timeout: 15_000 });

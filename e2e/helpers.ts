@@ -2,6 +2,25 @@ import type { Page } from "@playwright/test";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 /**
+ * Seeded demo accounts (scripts/seed.ts). Real inbox we own (+alias), not a
+ * fake/unowned domain — see docs/decisions.md. Centralized here so a future
+ * rename only happens in one place instead of drifting across spec files.
+ */
+export const PARTNER_DEMO_EMAIL = "danielcutrona+seed-partner@gmail.com";
+export const FOUNDER_DEMO_EMAIL = "danielcutrona+seed-founder@gmail.com";
+export const DEMO_PASSWORD = "dev-password-only-123!";
+
+/**
+ * Builds a unique-but-real test-user email for a throwaway Admin-API-created
+ * account. Still under a domain we actually own, so even though
+ * admin.createUser({ email_confirm: true }) never sends mail today, this
+ * costs nothing and removes the fake domain as a future footgun.
+ */
+export function testEmail(label: string) {
+  return `danielcutrona+e2e-${label}-${Date.now()}@gmail.com`;
+}
+
+/**
  * Signs the current user out via the real UI. Required before signing in as
  * a different user within the same test — proxy.ts redirects an
  * already-authenticated session away from /login back into the app, so

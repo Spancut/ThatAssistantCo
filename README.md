@@ -37,10 +37,12 @@ npx supabase db push
 
 `scripts/seed.ts` creates two deterministic dev accounts (never run against production):
 
-- `partner-demo@thatassistant.dev` — a Partner workspace
-- `founder-demo@thatassistant.dev` — a Founder workspace
+- `danielcutrona+seed-partner@gmail.com` — a Partner workspace
+- `danielcutrona+seed-founder@gmail.com` — a Founder workspace
 
 Both use the password printed at the end of the script run. Requires `.env.local` to be filled in (uses the service role key via the Supabase Admin API — this is why seeding isn't done as a plain SQL file: fabricating `auth.users` rows directly isn't a supported pattern against a hosted project).
+
+**Before changing these emails:** they're deliberately `+alias` addresses under a real inbox someone on the team owns, not a fabricated domain — Supabase flagged this project for bounces once already from fake-domain test addresses. If you fork this for your own project, swap in an inbox you control. See docs/decisions.md.
 
 ```bash
 npm run seed

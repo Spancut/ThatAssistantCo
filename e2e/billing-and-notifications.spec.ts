@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
-import { deleteTestUserAndOrgs } from "./helpers";
+import { DEMO_PASSWORD, PARTNER_DEMO_EMAIL, deleteTestUserAndOrgs, testEmail } from "./helpers";
 
 if (typeof process.loadEnvFile === "function") {
   try {
@@ -12,12 +12,11 @@ if (typeof process.loadEnvFile === "function") {
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-const DEMO_PASSWORD = "dev-password-only-123!";
 
 test.describe("Billing and notifications", () => {
   test("settings/billing shows plan and usage for the seeded workspace", async ({ page }) => {
     await page.goto("/login");
-    await page.getByLabel("Email").fill("partner-demo@thatassistant.dev");
+    await page.getByLabel("Email").fill(PARTNER_DEMO_EMAIL);
     await page.getByLabel("Password").fill(DEMO_PASSWORD);
     await page.getByRole("button", { name: "Sign in" }).click();
     await expect(page).toHaveURL(/\/partner-demo\/dashboard$/, { timeout: 15_000 });
@@ -44,7 +43,7 @@ test.describe("Billing and notifications", () => {
       auth: { autoRefreshToken: false, persistSession: false },
     });
 
-    const email = `notif-smoke-${Date.now()}@thatassistant.dev`;
+    const email = testEmail("notif-smoke");
     const { data: created, error } = await admin.auth.admin.createUser({
       email,
       password: DEMO_PASSWORD,

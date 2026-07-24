@@ -45,16 +45,21 @@ type SeedWorkspace = {
   productMode: "partner" | "founder";
 };
 
+// Real inbox we own (+alias), not a fake/unowned domain: these go through
+// Supabase Auth's admin API. That doesn't send a confirmation email today
+// (email_confirm: true bypasses it), but if that ever changes — a resend,
+// a future invite flow, a dashboard action — mail should land somewhere
+// real instead of bouncing. See docs/decisions.md.
 const SEEDS: SeedWorkspace[] = [
   {
-    email: "partner-demo@thatassistant.dev",
+    email: "danielcutrona+seed-partner@gmail.com",
     fullName: "Partner Demo User",
     orgName: "Acme Partner Demo",
     slug: "partner-demo",
     productMode: "partner",
   },
   {
-    email: "founder-demo@thatassistant.dev",
+    email: "danielcutrona+seed-founder@gmail.com",
     fullName: "Founder Demo User",
     orgName: "Acme Founder Demo",
     slug: "founder-demo",

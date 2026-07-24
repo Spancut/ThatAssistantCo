@@ -1,26 +1,33 @@
 import { test, expect } from "@playwright/test";
+import { DEMO_PASSWORD, FOUNDER_DEMO_EMAIL, PARTNER_DEMO_EMAIL } from "./helpers";
 
-const DEMO_PASSWORD = "dev-password-only-123!";
+// Fixed, real address we own — never a per-run random one. This test
+// specifically needs to exercise the actual public signUp() UI flow (not
+// the Admin API), so it can't avoid triggering Supabase's real email path
+// entirely; using a fixed owned inbox means if a confirmation email (or a
+// resend, on a repeat run) ever fires, it lands somewhere real instead of
+// bouncing. See docs/decisions.md ("Task 3" email-bounce fix).
+const SIGNUP_TEST_EMAIL = "danielcutrona+e2e-signup-test@gmail.com";
 
 test.describe("Milestone 1 smoke test", () => {
   test("sign-up never silently grants a session, and surfaces Supabase's real response", async ({
     page,
   }) => {
-    // Supabase validates that the signup email's domain is deliverable
-    // (unlike the Admin API used by scripts/seed.ts), so a made-up domain
-    // like thatassistant.dev is rejected. gmail.com has real MX records.
+    // Supabase validates that the signup email's domain is deliverable, so
+    // a made-up domain with no MX records is rejected outright (safe — no
+    // send is attempted). gmail.com passes that check, which is exactly why
+    // this address must be one we actually own rather than a fabricated one.
     //
     // Repeated live runs of this test against the same free-tier Supabase
-    // project can also legitimately hit Supabase's own signup rate limit
-    // instead of reaching the "confirm your email" path. Both are real,
-    // correctly-surfaced responses from Supabase (see the Alert in
-    // components/auth/signup-form.tsx) — the thing this test actually
-    // guards is "never silently redirect into the app without a session."
-    const uniqueEmail = `thatassistant.smoke.test+${Date.now()}@gmail.com`;
-
+    // project can also legitimately hit Supabase's own signup rate limit,
+    // or "user already registered" on a second run against the same fixed
+    // address. All are real, correctly-surfaced responses from Supabase
+    // (see the Alert in components/auth/signup-form.tsx) — the thing this
+    // test actually guards is "never silently redirect into the app
+    // without a session."
     await page.goto("/signup");
     await page.getByLabel("Full name").fill("Smoke Test User");
-    await page.getByLabel("Email").fill(uniqueEmail);
+    await page.getByLabel("Email").fill(SIGNUP_TEST_EMAIL);
     await page.getByLabel("Password").fill("supersecret123");
     await page.getByRole("button", { name: "Create account" }).click();
 
@@ -30,7 +37,7 @@ test.describe("Milestone 1 smoke test", () => {
 
   test("partner workspace shows Partner-specific navigation and dashboard", async ({ page }) => {
     await page.goto("/login");
-    await page.getByLabel("Email").fill("partner-demo@thatassistant.dev");
+    await page.getByLabel("Email").fill(PARTNER_DEMO_EMAIL);
     await page.getByLabel("Password").fill(DEMO_PASSWORD);
     await page.getByRole("button", { name: "Sign in" }).click();
 
@@ -44,7 +51,7 @@ test.describe("Milestone 1 smoke test", () => {
 
   test("founder workspace shows Founder-specific navigation and dashboard", async ({ page }) => {
     await page.goto("/login");
-    await page.getByLabel("Email").fill("founder-demo@thatassistant.dev");
+    await page.getByLabel("Email").fill(FOUNDER_DEMO_EMAIL);
     await page.getByLabel("Password").fill(DEMO_PASSWORD);
     await page.getByRole("button", { name: "Sign in" }).click();
 
@@ -58,7 +65,7 @@ test.describe("Milestone 1 smoke test", () => {
 
   test("settings page allows renaming the workspace and shows members", async ({ page }) => {
     await page.goto("/login");
-    await page.getByLabel("Email").fill("partner-demo@thatassistant.dev");
+    await page.getByLabel("Email").fill(PARTNER_DEMO_EMAIL);
     await page.getByLabel("Password").fill(DEMO_PASSWORD);
     await page.getByRole("button", { name: "Sign in" }).click();
     await expect(page).toHaveURL(/\/partner-demo\/dashboard$/, { timeout: 15_000 });
