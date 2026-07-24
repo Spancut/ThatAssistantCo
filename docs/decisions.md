@@ -2,6 +2,22 @@
 
 Lightweight decision log. Newest first.
 
+## 2026-07-24 — `org_id`, not `workspace_id`, on the new billing/notification tables
+
+The entitlements-foundation spec described the new tables' tenant column as `workspace_id`. Every existing workspace-scoped table (`memberships`, `audit_events`) uses `org_id` against `organizations.id` — "workspace" is the product-facing term for what the schema calls an organization, not a second underlying concept. Introducing `workspace_id` alongside `org_id` would make every future cross-table join/RLS policy inconsistent for no benefit. `subscriptions`, `entitlements`, `usage_events`, and `notifications` all use `org_id`. The public TypeScript helpers (`checkEntitlement`, `recordUsage`, `createNotification`) still take `workspaceId` as their parameter name, since that's user-facing API surface, not a DB column — so callers writing Milestone 3 code can use the exact signature from the spec regardless of this internal naming choice. Cheap to rename later if this guess was wrong (brand-new tables, no data yet).
+
+## 2026-07-24 — Usage periods are calendar-month UTC, not billing-anniversary
+
+`checkEntitlement`'s "current period" sums `usage_events` since the start of the current calendar month in UTC. There's no Stripe integration yet and `subscriptions` has no `current_period_start`/`current_period_end` columns, so there's no billing-anniversary date to anchor to. When Stripe billing lands, this should switch to the subscription's actual billing period — noted here so that migration isn't a surprise.
+
+## 2026-07-24 — Entitlement checks default-deny on an unconfigured feature key
+
+`checkEntitlement(workspaceId, featureKey)` returns `{ allowed: false, remaining: 0 }` if no `entitlements` row exists for that `(org_id, feature_key)` pair, rather than treating a missing row as unlimited. An unconfigured feature key is a bug (forgot to seed the entitlement) that should fail closed, not a product decision to grant unlimited access silently.
+
+## 2026-07-24 — `create_notification()` RPC instead of a client-facing INSERT policy
+
+`notifications` has no INSERT policy for `authenticated` — the acting user and the notification's recipient are very often different people (someone's action notifies a teammate), which doesn't fit the "you can only insert rows about yourself" shape every other insertable table in this schema uses. `create_notification()` is a `SECURITY DEFINER` function (same pattern as `create_workspace()`) that requires the caller AND the recipient to both be members of the target workspace before it will write a row.
+
 ## 2026-07-24 — Proxy over Middleware for session refresh
 
 Next.js 16 deprecated `middleware.ts`/`export function middleware` in favor of `proxy.ts`/`export function proxy`; the Edge runtime is not supported in `proxy` (Node.js only, not configurable). We use `proxy.ts` for Supabase session-cookie refresh and basic unauthenticated-route redirects, but per Next.js 16's own guidance we do **not** treat Proxy as the authorization boundary — every server action/server component re-verifies the caller via Supabase session + RLS. See [architecture.md](architecture.md).

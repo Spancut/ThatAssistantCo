@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createWorkspaceSchema } from "@/lib/validations/workspace";
 import { recordAuditEvent } from "@/lib/server/audit";
+import { createNotification } from "@/lib/server/notifications";
 
 export type CreateWorkspaceState = { error?: string };
 
@@ -46,6 +47,16 @@ export async function createWorkspaceAction(
     targetId: org.id,
     metadata: { product_mode: org.product_mode },
   });
+
+  // Single test notification to prove the notification pipe works end to
+  // end. No other call site writes notifications yet — see docs/build-plan.md.
+  await createNotification(
+    org.id,
+    user.id,
+    "workspace.created",
+    { workspaceName: org.name },
+    supabase
+  );
 
   redirect(`/${org.slug}/dashboard`);
 }

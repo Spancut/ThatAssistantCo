@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getWorkspaceBySlug } from "@/lib/server/workspaces";
+import { getRecentNotifications, getUnreadNotificationCount } from "@/lib/server/notifications";
 import { AppShell } from "@/components/shell/app-shell";
 
 export default async function OrgLayout({
@@ -25,8 +26,18 @@ export default async function OrgLayout({
     notFound();
   }
 
+  const [notifications, unreadCount] = await Promise.all([
+    getRecentNotifications(supabase, workspace.id, user.id),
+    getUnreadNotificationCount(supabase, workspace.id, user.id),
+  ]);
+
   return (
-    <AppShell workspace={workspace} userEmail={user.email ?? ""}>
+    <AppShell
+      workspace={workspace}
+      userEmail={user.email ?? ""}
+      notifications={notifications}
+      unreadCount={unreadCount}
+    >
       {children}
     </AppShell>
   );

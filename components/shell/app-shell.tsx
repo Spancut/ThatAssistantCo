@@ -1,16 +1,22 @@
 import { Briefcase, Compass } from "lucide-react";
 import type { WorkspaceSummary } from "@/lib/server/workspaces";
+import type { NotificationRow } from "@/lib/server/notifications";
 import { Badge } from "@/components/ui/badge";
 import { ModeNav } from "@/components/shell/mode-nav";
 import { UserMenu } from "@/components/shell/user-menu";
+import { NotificationBell } from "@/components/shell/notification-bell";
 
 export function AppShell({
   workspace,
   userEmail,
+  notifications,
+  unreadCount,
   children,
 }: {
   workspace: WorkspaceSummary;
   userEmail: string;
+  notifications: NotificationRow[];
+  unreadCount: number;
   children: React.ReactNode;
 }) {
   const ModeIcon = workspace.product_mode === "founder" ? Compass : Briefcase;
@@ -32,6 +38,7 @@ export function AppShell({
           </div>
           <div className="flex items-center gap-4">
             <ModeNav orgSlug={workspace.slug} productMode={workspace.product_mode} />
+            <NotificationBell initialNotifications={notifications} initialUnreadCount={unreadCount} />
             <UserMenu email={userEmail} />
           </div>
         </div>

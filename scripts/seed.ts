@@ -134,13 +134,40 @@ async function ensureWorkspace(seed: SeedWorkspace, userId: string) {
   return org.id as string;
 }
 
+const DEFAULT_ENTITLEMENTS: { feature_key: string; limit_value: number | null }[] = [
+  { feature_key: "ai_generations_per_month", limit_value: 200 },
+  { feature_key: "max_clients", limit_value: null },
+  { feature_key: "max_contacts", limit_value: null },
+];
+
+/**
+ * Idempotent: runs for both newly-created and pre-existing seeded
+ * workspaces, so re-running `npm run seed` also backfills billing rows for
+ * workspaces created before this migration existed.
+ */
+async function ensureBilling(orgId: string) {
+  const { error: subscriptionError } = await admin
+    .from("subscriptions")
+    .upsert({ org_id: orgId, plan: "trial", status: "active" }, { onConflict: "org_id", ignoreDuplicates: true });
+  if (subscriptionError) throw subscriptionError;
+
+  const { error: entitlementsError } = await admin.from("entitlements").upsert(
+    DEFAULT_ENTITLEMENTS.map((e) => ({ org_id: orgId, ...e })),
+    { onConflict: "org_id,feature_key", ignoreDuplicates: true }
+  );
+  if (entitlementsError) throw entitlementsError;
+
+  console.log("  subscription + entitlements ensured");
+}
+
 async function main() {
   console.log("Seeding dev data (never run against production)...");
   for (const seed of SEEDS) {
     console.log(`\n${seed.productMode} demo:`);
     const user = await ensureUser(seed);
     if (!user) throw new Error(`Failed to resolve user for ${seed.email}`);
-    await ensureWorkspace(seed, user.id);
+    const orgId = await ensureWorkspace(seed, user.id);
+    await ensureBilling(orgId);
   }
   console.log(`\nDone. Dev login password for seeded users: ${DEV_PASSWORD}`);
 }

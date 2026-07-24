@@ -1,5 +1,6 @@
 /**
- * Hand-written to match supabase/migrations/20260724000001_init_platform_schema.sql.
+ * Hand-written to match supabase/migrations/20260724000001_init_platform_schema.sql
+ * and 20260724000002_billing_entitlements_notifications.sql.
  * Once a live project exists, regenerate with:
  *   npx supabase gen types typescript --linked > lib/types/database.ts
  * and re-apply any manual additions.
@@ -12,6 +13,8 @@ export type MembershipRole =
   | "member"
   | "client_reviewer"
   | "certified_operator";
+export type SubscriptionPlan = "trial" | "starter" | "pro";
+export type SubscriptionStatus = "active" | "past_due" | "canceled";
 
 export interface Database {
   public: {
@@ -121,6 +124,123 @@ export interface Database {
         };
         Relationships: [];
       };
+      subscriptions: {
+        Row: {
+          id: string;
+          org_id: string;
+          plan: SubscriptionPlan;
+          status: SubscriptionStatus;
+          stripe_customer_id: string | null;
+          stripe_subscription_id: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          org_id: string;
+          plan?: SubscriptionPlan;
+          status?: SubscriptionStatus;
+          stripe_customer_id?: string | null;
+          stripe_subscription_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          org_id?: string;
+          plan?: SubscriptionPlan;
+          status?: SubscriptionStatus;
+          stripe_customer_id?: string | null;
+          stripe_subscription_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      entitlements: {
+        Row: {
+          id: string;
+          org_id: string;
+          feature_key: string;
+          limit_value: number | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          org_id: string;
+          feature_key: string;
+          limit_value?: number | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          org_id?: string;
+          feature_key?: string;
+          limit_value?: number | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      usage_events: {
+        Row: {
+          id: string;
+          org_id: string;
+          feature_key: string;
+          amount: number;
+          created_by: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          org_id: string;
+          feature_key: string;
+          amount?: number;
+          created_by: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          org_id?: string;
+          feature_key?: string;
+          amount?: number;
+          created_by?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      notifications: {
+        Row: {
+          id: string;
+          org_id: string;
+          user_id: string;
+          type: string;
+          payload: Record<string, unknown>;
+          read_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          org_id: string;
+          user_id: string;
+          type: string;
+          payload?: Record<string, unknown>;
+          read_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          org_id?: string;
+          user_id?: string;
+          type?: string;
+          payload?: Record<string, unknown>;
+          read_at?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -136,10 +256,21 @@ export interface Database {
         Args: { target_org_id: string; uid: string };
         Returns: boolean;
       };
+      create_notification: {
+        Args: {
+          target_org_id: string;
+          target_user_id: string;
+          notification_type: string;
+          notification_payload?: Record<string, unknown>;
+        };
+        Returns: Database["public"]["Tables"]["notifications"]["Row"];
+      };
     };
     Enums: {
       product_mode: ProductMode;
       membership_role: MembershipRole;
+      subscription_plan: SubscriptionPlan;
+      subscription_status: SubscriptionStatus;
     };
   };
 }

@@ -13,6 +13,19 @@ Every table below lives in the `public` schema, carries an `org_id` (or is itsel
 
 Workspace creation is atomic via the `create_workspace(name, product_mode)` `SECURITY DEFINER` function (inserts `organizations` + owner `membership` in one transaction) — see `supabase/migrations/`.
 
+## Milestone 1.5 — implemented (Entitlements, Usage & Notifications Foundation)
+
+Built ahead of Milestone 3 so every AI call site is required to check entitlements from day one. See [ai-orchestration.md](ai-orchestration.md) and [security-and-approval-policy.md](security-and-approval-policy.md).
+
+| Table | Purpose | Key columns |
+|---|---|---|
+| `subscriptions` | One row per workspace: plan + status | `org_id` (unique), `plan` (`trial`\|`starter`\|`pro`), `status` (`active`\|`past_due`\|`canceled`), `stripe_customer_id`, `stripe_subscription_id`, `created_at`, `updated_at` |
+| `entitlements` | Per-workspace, per-feature limits | `org_id`, `feature_key`, `limit_value` (null = unlimited); unique (`org_id`, `feature_key`) |
+| `usage_events` | Append-only usage log, summed against `entitlements.limit_value` for the current calendar month (UTC) | `org_id`, `feature_key`, `amount`, `created_by`, `created_at` |
+| `notifications` | Per-user, per-workspace notifications | `org_id`, `user_id`, `type`, `payload` (jsonb), `read_at`, `created_at` |
+
+`create_workspace()` also provisions a trial `subscriptions` row and a generous default `entitlements` set (`ai_generations_per_month: 200`, `max_clients`/`max_contacts: unlimited`) atomically. `create_notification(org_id, user_id, type, payload)` is a `SECURITY DEFINER` function and the only write path into `notifications` — see [decisions.md](decisions.md). [lib/server/entitlements.ts](../lib/server/entitlements.ts) (`checkEntitlement`, `recordUsage`) is the only supported way to read/write entitlement state; no workflow or route queries these tables directly.
+
 ## Milestone 2 — planned (Knowledge & Relationships)
 
 | Table | Purpose | Product |
@@ -25,12 +38,13 @@ Workspace creation is atomic via the `create_workspace(name, product_mode)` `SEC
 
 ## Milestone 3 — planned (AI Workbench & Outputs)
 
+Entitlement enforcement for this milestone uses the already-implemented `usage_events`/`entitlements` tables (Milestone 1.5) via `checkEntitlement`/`recordUsage` — no separate `usage_records` table is needed.
+
 | Table | Purpose |
 |---|---|
 | `workflows` | Registry of available AI workflows per product mode (e.g. `partner.draft_client_email`, `founder.enquiry_response`) |
 | `workflow_runs` | One invocation of a workflow: inputs, assembled context, prompt version, model, usage, status |
-| `generated_outputs` | The structured, Zod-validated result of a run: assumptions, missing information, confidence, review checklist, approval state |
-| `usage_records` | Token/cost accounting per run, per org, for entitlement enforcement |
+| `generated_outputs` | The structured, Zod-validated result of a run: assumptions, missing information, confidence, review checklist, approval state, and per-run model/token usage metadata |
 
 ## Milestone 4 — planned (Product Operations)
 
@@ -42,9 +56,10 @@ Workspace creation is atomic via the `create_workspace(name, product_mode)` `SEC
 
 ## Milestone 5 — planned (Hardening)
 
+Plan-derived entitlements (`subscriptions`/`entitlements`) were built early, in Milestone 1.5 — see above. Milestone 5 adds:
+
 | Table | Purpose |
 |---|---|
-| `subscription_entitlements` | Plan-derived limits (workflow runs/month, seats, storage) |
 | `data_export_requests`, `data_deletion_requests` | Auditable record of workspace export/delete flows |
 
 ## Enums

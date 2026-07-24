@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { ChevronRight, CreditCard } from "lucide-react";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getWorkspaceBySlug, getWorkspaceMembers } from "@/lib/server/workspaces";
@@ -66,6 +68,22 @@ export default async function SettingsPage({
           <MembersList members={members} />
         </CardContent>
       </Card>
+
+      <Link
+        href={`/${workspace.slug}/settings/billing`}
+        className="flex items-center justify-between rounded-lg border border-border bg-card p-4 transition-colors hover:border-primary/50"
+      >
+        <span className="flex items-center gap-2">
+          <CreditCard className="size-4 text-muted-foreground" />
+          <span>
+            <span className="block font-medium text-foreground">Billing</span>
+            <span className="block text-sm text-muted-foreground">
+              Current plan and usage this period.
+            </span>
+          </span>
+        </span>
+        <ChevronRight className="size-4 text-muted-foreground" />
+      </Link>
     </div>
   );
 }
