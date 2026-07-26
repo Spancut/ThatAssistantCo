@@ -9,12 +9,15 @@ import { listKnowledgeItemsForContact } from "@/lib/server/knowledge";
 import {
   addContactKnowledgeItemAction,
   deleteContactKnowledgeItemAction,
+  generateContactDraftAction,
 } from "@/app/[orgSlug]/contacts/actions";
 import { ContactForm } from "@/components/contacts/contact-form";
 import { KnowledgeSection } from "@/components/knowledge/knowledge-section";
+import { DraftGeneratorForm } from "@/components/ai/draft-generator-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PIPELINE_STAGE_LABELS } from "@/lib/validations/contact";
+import { checkEntitlement } from "@/lib/server/entitlements";
 
 export const metadata: Metadata = { title: "Contact — ThatAssistant" };
 
@@ -37,6 +40,7 @@ export default async function ContactDetailPage({
   if (!contact) notFound();
 
   const knowledgeItems = await listKnowledgeItemsForContact(supabase, workspace.id, contactId);
+  const entitlement = await checkEntitlement(workspace.id, "ai_generations_per_month", supabase);
 
   return (
     <div className="max-w-2xl space-y-8">
@@ -62,6 +66,19 @@ export default async function ContactDetailPage({
         </CardHeader>
         <CardContent>
           <ContactForm orgSlug={orgSlug} contact={contact} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent>
+          <DraftGeneratorForm
+            action={generateContactDraftAction.bind(null, orgSlug, contactId)}
+            title="Draft response"
+            description={`Draft a response to ${contact.name} for you to review and send yourself.`}
+            placeholder="What did they ask, or what does this response need to say?"
+            buttonLabel="Draft response"
+            remaining={entitlement.remaining}
+          />
         </CardContent>
       </Card>
 

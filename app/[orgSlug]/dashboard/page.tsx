@@ -8,6 +8,7 @@ import { countContacts } from "@/lib/server/contacts";
 import { WorkspaceSummaryCard } from "@/components/dashboard/workspace-summary-card";
 import { ComingSoonCard } from "@/components/dashboard/coming-soon-card";
 import { EntitySummaryCard } from "@/components/dashboard/entity-summary-card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const metadata: Metadata = { title: "Dashboard — ThatAssistant" };
 
@@ -87,12 +88,25 @@ export default async function DashboardPage({
         </div>
       </div>
 
-      <ComingSoonCard
-        icon={Compass}
-        title="AI Workbench"
-        description="Run workflows against real stored context and review structured, approvable drafts — no automatic sending."
-        milestone="Milestone 3"
-      />
+      <Card className="border-dashed">
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <Compass className="size-4 text-muted-foreground" />
+            <CardTitle className="text-base">AI drafting</CardTitle>
+          </div>
+          <CardDescription>
+            {isFounder
+              ? "Open a contact and use Draft response to generate a reviewable draft from their notes and history — nothing sends automatically."
+              : "Open a client and use Draft email to generate a reviewable draft in their brand voice — nothing sends automatically."}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">
+            A unified view across all drafts and approvals is still to come — for now, drafts live on
+            the {isFounder ? "contact" : "client"} they were written for.
+          </p>
+        </CardContent>
+      </Card>
     </div>
   );
 }

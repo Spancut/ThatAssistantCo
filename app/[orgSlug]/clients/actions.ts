@@ -17,6 +17,9 @@ import {
   parseTagsInput,
   type KnowledgeItemFormState,
 } from "@/lib/validations/knowledge";
+import { draftPromptFormSchema, ENTITLEMENT_BLOCKED_MESSAGE, type DraftGenerationState } from "@/lib/validations/ai";
+import { assembleClientContext } from "@/lib/ai/context";
+import { generateDraftEmail } from "@/lib/ai/orchestrator";
 
 export type ClientFormState = { error?: string; success?: boolean };
 
@@ -183,4 +186,35 @@ export async function deleteClientKnowledgeItemAction(
   });
 
   revalidatePath(`/${orgSlug}/clients/${clientId}`);
+}
+
+export async function generateClientDraftAction(
+  orgSlug: string,
+  clientId: string,
+  _prevState: DraftGenerationState,
+  formData: FormData
+): Promise<DraftGenerationState> {
+  const parsed = draftPromptFormSchema.safeParse({ userPrompt: formData.get("userPrompt") });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+
+  const { supabase, user, workspace } = await requireWorkspace(orgSlug);
+
+  const context = await assembleClientContext(supabase, workspace.id, clientId);
+
+  const result = await generateDraftEmail(supabase, {
+    orgId: workspace.id,
+    userId: user.id,
+    userPrompt: parsed.data.userPrompt,
+    context,
+  });
+
+  if (!result.ok) {
+    return {
+      error: result.reason === "entitlement_blocked" ? ENTITLEMENT_BLOCKED_MESSAGE : result.error,
+    };
+  }
+
+  redirect(`/${orgSlug}/outputs/${result.outputId}`);
 }

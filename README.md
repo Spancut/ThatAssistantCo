@@ -19,6 +19,8 @@ Next.js 16 (App Router) · TypeScript strict · Tailwind CSS v4 · shadcn/ui · 
    ```
    - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` — safe for the browser.
    - `SUPABASE_SERVICE_ROLE_KEY` — server-only, used by `scripts/seed.ts`. Never expose this.
+   - `OPENAI_API_KEY` — server-only, used by `lib/ai/client.ts` (the AI draft workflow). Never expose this.
+   - `E2E_TEST_EMAIL_BASE` — Playwright only, not used by the app itself. A real inbox you own; seeded/test accounts are created as `+alias` addresses under it so nothing bounces. See "Seed data" below and docs/decisions.md.
 4. In your Supabase project's **Authentication → Providers → Email** settings, consider turning **Confirm email** off during local development so sign-up doesn't require clicking an emailed link. Turn it back on before going to production.
 
 ## Supabase migrations
@@ -62,12 +64,12 @@ Open [http://localhost:3000](http://localhost:3000).
 npm run typecheck   # tsc --noEmit
 npm run lint        # eslint
 npm test            # vitest (unit tests)
-npm run test:e2e    # playwright (requires the dev server + a real Supabase project)
+npm run test:e2e    # playwright (requires the dev server, a real Supabase project, and E2E_TEST_EMAIL_BASE set to an inbox you own)
 ```
 
 ## Deployment
 
 1. Push `supabase/migrations/` to your production Supabase project (`npx supabase db push` against the prod project ref) — do **not** run `scripts/seed.ts` against production.
-2. Set `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` (and `OPENAI_API_KEY` once Milestone 3 lands) as server environment variables on your hosting platform. Never commit them.
+2. Set `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, and `OPENAI_API_KEY` as server environment variables on your hosting platform. Never commit them. (`E2E_TEST_EMAIL_BASE` is Playwright-only — don't set it in production.)
 3. In Supabase Auth settings, turn **Confirm email** back on and set the site URL / redirect URLs to your production domain (needed for `/auth/callback` to work).
 4. `npm run build && npm start`, or deploy to a platform that runs `next build`/`next start` for you (Turbopack is the default build/dev engine in Next.js 16).

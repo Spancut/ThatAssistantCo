@@ -1,46 +1,58 @@
 # AI Orchestration
 
+Built in Milestone 3. This describes what's actually implemented; see [decisions.md](decisions.md) for why a few specifics diverged from the original plan below.
+
 ## One service, not a multi-agent system
 
-ThatAssistant uses a single, controlled AI orchestration service (`lib/ai/` — built in Milestone 3) rather than a multi-agent architecture. Each "workflow" (e.g. Partner's *Draft Client Email*, Founder's *Enquiry Response Draft*) is a workflow-specific instruction set + a Zod schema for its structured output, run through one shared execution path:
+`lib/ai/` is a single, controlled AI orchestration module, not a multi-agent architecture. There is currently one workflow ("draft_email," shared by both products — see [data-model.md](data-model.md#milestone-3--implemented-ai-workbench--outputs)), run through one shared execution path:
 
 ```
-assembleContext(orgId, workflowType, refs) -> buildPrompt(workflow, context, input)
-  -> callModel(prompt)  [OpenAI Responses API, server-side only]
-  -> validateOutput(schema, rawResponse)  [Zod]
-  -> persistOutput(...)  [generated_outputs row, status = draft]
+assembleClientContext | assembleContactContext (lib/ai/context.ts)
+  -> buildDraftEmailPrompt (lib/ai/prompts/draft-email.ts)
+  -> generateStructured (lib/ai/client.ts — OpenAI Responses API, server-side only)
+  -> Zod validation, retry once on failure (lib/ai/client.ts:generateWithValidation)
+  -> persist workflow_run + output (lib/ai/orchestrator.ts, status = "draft")
 ```
 
-There is exactly one place model calls happen (`lib/ai/client.ts`), one place prompts are versioned (`lib/ai/prompts/<workflow>.ts`, tagged with a version string stored on every run), and one place structured output is validated before it ever reaches storage or the UI.
+`lib/ai/orchestrator.ts:generateDraftEmail` is the only place all of this is wired together, and `lib/ai/client.ts` is the only file that imports the `openai` package — no route, Server Action, or component calls the model directly.
 
 ## Context assembly
 
-Context for a workflow run is assembled server-side from stored records only — the client never supplies free-text "context," only references (a client/contact id, a date range, etc.). This keeps AI output grounded in what the org has actually recorded (client brand voice/preferences/restrictions for Partner; contact history/notes for Founder) and auditable after the fact (the assembled context is stored alongside the run).
+Context is assembled server-side from stored records only ([lib/ai/context.ts](../lib/ai/context.ts)) — the client only ever supplies a client/contact id (via which detail page the "Draft email"/"Draft response" button was clicked) and the free-text prompt describing what the email needs to say. This is where Partner and Founder actually differ, expressed as a discriminated union (`AssembledContext` in `lib/ai/types.ts`):
+
+- **Partner** (`assembleClientContext`): `client_profiles.brand_voice`/`.preferences`/`.key_facts`, plus any `knowledge_base_items` linked to that client.
+- **Founder** (`assembleContactContext`): `contacts.notes`/`.pipeline_stage`, plus any `knowledge_base_items` linked to that contact.
+
+Everything downstream (prompt building, the model call, persistence) is shared and doesn't branch on which union member it received.
 
 ## Structured output contract
 
-Every workflow's Zod schema requires the model to return, at minimum:
+This workflow's Zod schema (`lib/ai/schema.ts:draftEmailOutputSchema`) is narrower than an earlier, more general draft of this document described — the actual spec for this milestone fixed the exact shape:
 
-- the primary drafted content
-- `assumptions: string[]` — things the model inferred without being told
-- `missingInformation: string[]` — what would have made the output better/safer
-- `confidence: "low" | "medium" | "high"`
-- `reviewChecklist: string[]` — specific things a human should check before approving
+```ts
+{
+  subject: string,
+  body: string,
+  tone_notes: string,
+  context_sources_used: string[],
+  confidence_flag: "high" | "medium" | "low",
+}
+```
 
-If the model's response fails schema validation, the run is marked `failed`, the raw error is logged (not silently discarded), and no partial/invalid output is ever shown as if it were usable.
+Every model response is validated against this schema. On a validation failure, `generateWithValidation` retries once (a fresh model call, not a re-parse of the same response); if the second attempt also fails validation, it throws `ModelOutputValidationError` and the orchestrator marks `workflow_run.status = "failed"` — no partial/invalid output is ever persisted or shown as usable. A network/API-level error from the model call itself is not retried the same way — it fails the run immediately.
 
 ## Storage
 
-Every run persists: `org_id`, optional `client_id`/`contact_id`, `workflow_type`, `title`, the structured output, assumptions, missing information, confidence, review checklist, `prompt_version`, `model`, token usage, `status` (`draft`/`pending_review`/`approved`/`rejected`/`revised`), timestamps, and `created_by`. See [data-model.md](data-model.md#milestone-3--planned-ai-workbench--outputs).
+Every run persists (`workflow_runs`): `workflow_template_id`, `org_id`, `initiated_by`, `input_snapshot` (the user's prompt *and* the full assembled context — enough to debug a bad output against exactly what it was given), `status`, `created_at`. Every successful generation also persists (`outputs`): `workflow_run_id`, `org_id`, `output_type`, `draft_content` (current human-readable text), `structured_content` (the full structured response — mutable, see decisions.md), `status` (`draft` → `approved`/`edited_and_approved`/`rejected`), `created_at`. Model name and token usage are captured by `lib/ai/client.ts`'s return value but not currently persisted as separate columns (`workflow_runs`/`outputs` don't have `model`/`usage` columns in this milestone's schema — a reasonable future addition once cost tracking matters).
 
 ## Safety policy checks
 
-Before a workflow runs, the input is screened for request categories that must never be silently fulfilled: earnings/health/legal/financial claims, invented testimonials, impersonation, spam-like or bulk unsolicited messaging, deceptive urgency, unsupported guarantees. A flagged request does not silently comply — it returns a clear warning plus an accurate, ethical alternative framing, and the policy event itself is stored (linked to the attempted run) so patterns are visible later. The model is never asked to invent supporting evidence to satisfy a flagged request.
+Guidance against earnings/health/legal/financial claims, invented testimonials, impersonation, spam-like/bulk messaging, deceptive urgency, and unsupported guarantees is embedded directly in the single prompt (`lib/ai/prompts/draft-email.ts`), instructing the model to omit any such claim from the draft and lower `confidence_flag` accordingly rather than comply. This is deliberately *not* a separate pre-flight classifier call — see decisions.md for why (this milestone is explicitly one model call, not multi-step). No policy-event table exists yet; a flagged/adjusted request is only visible via the resulting draft's low `confidence_flag` and `tone_notes`, not a separately stored record.
 
 ## No external side effects
 
-The AI service only ever produces a stored draft. Nothing in the orchestration path sends email, publishes content, changes a calendar, contacts a customer, issues a quote, or modifies an external system — see [security-and-approval-policy.md](security-and-approval-policy.md).
+The AI service only ever produces a stored draft with `status = "draft"`. There is no send/publish button anywhere in the product. Approving an output ([app/[orgSlug]/outputs/actions.ts](../app/%5BorgSlug%5D/outputs/actions.ts)) only changes its own status and writes an `audit_events` row — it never sends email, publishes content, changes a calendar, contacts a customer, issues a quote, or modifies an external system. See [security-and-approval-policy.md](security-and-approval-policy.md).
 
 ## Model abstraction
 
-`lib/ai/client.ts` wraps the OpenAI Responses API behind a small interface (`generateStructured(schema, prompt, options) -> result`) so the model/provider is swappable without touching workflow code. Until a real API key is supplied, this module can be backed by a deterministic mock implementation for development — the workflow and validation code is identical either way.
+`lib/ai/client.ts` exposes a `ModelClient` interface (`generateStructured<T>(schema, prompt, schemaName) -> GeneratedResult<T>`) implemented by `createOpenAIModelClient()` (wraps `openai.responses.parse()` with `zodTextFormat`). `lib/ai/orchestrator.ts:generateDraftEmail` takes an optional `modelClient` parameter defaulting to the real OpenAI-backed one — unit tests inject a fake `ModelClient` instead (see `lib/ai/orchestrator.test.ts`), so the full entitlement-gate → context → persist flow is tested without any network call, while the live Playwright suite exercises the real OpenAI path end to end.

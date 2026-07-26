@@ -12,7 +12,7 @@ Every organisation-owned table has RLS enabled with no exceptions. There is no t
 
 ## Approval boundary
 
-Every externally consequential action requires an explicit human approval step before it happens. In the MVP, this is enforced by *not building the external action at all* — see below. Starting in Milestone 3, AI-generated outputs carry a status (`draft` → `pending_review` → `approved`/`rejected`/`revised`), and every status transition writes an `audit_events` row (actor, action, target, timestamp).
+Every externally consequential action requires an explicit human approval step before it happens. In the MVP, this is enforced by *not building the external action at all* — see below. Starting in Milestone 3, AI-generated outputs carry a status (`draft` → `approved`/`edited_and_approved`/`rejected`), and every status transition writes an `audit_events` row (actor, action, target, timestamp).
 
 ## MVP hard constraints — no automatic external actions
 

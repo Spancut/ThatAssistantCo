@@ -1,14 +1,41 @@
 import type { Page } from "@playwright/test";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+// Guarantee .env.local is loaded even if this module is imported before a
+// spec file gets a chance to load it itself — ES module imports are
+// evaluated before the importing file's own top-level code runs, so we
+// can't rely on the spec file's own process.loadEnvFile() call happening
+// first.
+if (typeof process.loadEnvFile === "function") {
+  try {
+    process.loadEnvFile(".env.local");
+  } catch {
+    // no .env.local present (e.g. CI); rely on already-exported env vars
+  }
+}
+
 /**
- * Seeded demo accounts (scripts/seed.ts). Real inbox we own (+alias), not a
- * fake/unowned domain — see docs/decisions.md. Centralized here so a future
- * rename only happens in one place instead of drifting across spec files.
+ * Real inbox someone on the team owns (+alias), not a fake/unowned domain —
+ * see docs/decisions.md. Read from an env var rather than hardcoded, so no
+ * personal address lives in source going forward. Falls back to a
+ * non-deliverable placeholder for CI/environments where it isn't set —
+ * fine there, since nothing in CI is expected to actually reach Supabase's
+ * real signup-email path against this address (see smoke.spec.ts).
  */
-export const PARTNER_DEMO_EMAIL = "danielcutrona+seed-partner@gmail.com";
-export const FOUNDER_DEMO_EMAIL = "danielcutrona+seed-founder@gmail.com";
+const TEST_EMAIL_BASE = process.env.E2E_TEST_EMAIL_BASE || "e2e-test@example.com";
+const [TEST_EMAIL_LOCAL, TEST_EMAIL_DOMAIN] = TEST_EMAIL_BASE.split("@");
+
+/** Seeded demo accounts (scripts/seed.ts). Centralized so a rename happens in one place. */
+export const PARTNER_DEMO_EMAIL = `${TEST_EMAIL_LOCAL}+seed-partner@${TEST_EMAIL_DOMAIN}`;
+export const FOUNDER_DEMO_EMAIL = `${TEST_EMAIL_LOCAL}+seed-founder@${TEST_EMAIL_DOMAIN}`;
 export const DEMO_PASSWORD = "dev-password-only-123!";
+
+/**
+ * Fixed (not per-run) address for the one test that must drive the real
+ * public signup UI — see smoke.spec.ts and docs/decisions.md for why this
+ * one can't just use the Admin API like every other test-user creation here.
+ */
+export const SIGNUP_TEST_EMAIL = `${TEST_EMAIL_LOCAL}+e2e-signup-test@${TEST_EMAIL_DOMAIN}`;
 
 /**
  * Builds a unique-but-real test-user email for a throwaway Admin-API-created
@@ -17,7 +44,7 @@ export const DEMO_PASSWORD = "dev-password-only-123!";
  * costs nothing and removes the fake domain as a future footgun.
  */
 export function testEmail(label: string) {
-  return `danielcutrona+e2e-${label}-${Date.now()}@gmail.com`;
+  return `${TEST_EMAIL_LOCAL}+e2e-${label}-${Date.now()}@${TEST_EMAIL_DOMAIN}`;
 }
 
 /**

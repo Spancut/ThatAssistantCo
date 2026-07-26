@@ -1,13 +1,10 @@
 import { test, expect } from "@playwright/test";
-import { DEMO_PASSWORD, FOUNDER_DEMO_EMAIL, PARTNER_DEMO_EMAIL } from "./helpers";
-
-// Fixed, real address we own — never a per-run random one. This test
-// specifically needs to exercise the actual public signUp() UI flow (not
-// the Admin API), so it can't avoid triggering Supabase's real email path
-// entirely; using a fixed owned inbox means if a confirmation email (or a
-// resend, on a repeat run) ever fires, it lands somewhere real instead of
-// bouncing. See docs/decisions.md ("Task 3" email-bounce fix).
-const SIGNUP_TEST_EMAIL = "danielcutrona+e2e-signup-test@gmail.com";
+import {
+  DEMO_PASSWORD,
+  FOUNDER_DEMO_EMAIL,
+  PARTNER_DEMO_EMAIL,
+  SIGNUP_TEST_EMAIL,
+} from "./helpers";
 
 test.describe("Milestone 1 smoke test", () => {
   test("sign-up never silently grants a session, and surfaces Supabase's real response", async ({

@@ -63,6 +63,14 @@ class FakeTable {
     return this;
   }
 
+  gte(col: string, val: string | number) {
+    this.filters.push((row) => {
+      const rowVal = row[col];
+      return typeof rowVal === "string" || typeof rowVal === "number" ? rowVal >= val : false;
+    });
+    return this;
+  }
+
   order(col: string, opts?: { ascending?: boolean }) {
     this.orderCol = col;
     this.orderAsc = opts?.ascending ?? true;
@@ -147,9 +155,22 @@ class FakeTable {
 
 export class FakeSupabase {
   private tables: Record<string, Row[]> = {};
+  private currentUserId: string | null = null;
+
+  /** Mimics supabase.auth.getUser() for code paths that need the actor's id (e.g. recordUsage). */
+  auth = {
+    getUser: async () => ({
+      data: { user: this.currentUserId ? { id: this.currentUserId } : null },
+    }),
+  };
 
   seed(table: string, rows: Row[]) {
     this.tables[table] = rows;
+    return this;
+  }
+
+  setCurrentUser(userId: string | null) {
+    this.currentUserId = userId;
     return this;
   }
 

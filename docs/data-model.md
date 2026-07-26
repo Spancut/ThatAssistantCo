@@ -38,22 +38,27 @@ Built ahead of Milestone 3 so every AI call site is required to check entitlemen
 
 Not built in Milestone 2 (deferred, not part of the shared platform's minimum): `documents` (file metadata / Storage), `notes`/`tasks` as separate tables (contacts already has an inline `notes` field; client_profiles' "recurring responsibilities" live in `preferences` for now), a distinct `knowledge_records` table (folded into `knowledge_base_items`).
 
-## Milestone 3 — planned (AI Workbench & Outputs)
+## Milestone 3 — implemented (AI Workbench & Outputs)
 
-Entitlement enforcement for this milestone uses the already-implemented `usage_events`/`entitlements` tables (Milestone 1.5) via `checkEntitlement`/`recordUsage` — no separate `usage_records` table is needed.
+Entitlement enforcement uses the already-implemented `usage_events`/`entitlements` tables (Milestone 1.5) via `checkEntitlement`/`recordUsage` — no separate `usage_records` table. One workflow_template, one orchestration path ([lib/ai/orchestrator.ts](../lib/ai/orchestrator.ts)), shared by both products.
 
-| Table | Purpose |
-|---|---|
-| `workflows` | Registry of available AI workflows per product mode (e.g. `partner.draft_client_email`, `founder.enquiry_response`) |
-| `workflow_runs` | One invocation of a workflow: inputs, assembled context, prompt version, model, usage, status |
-| `generated_outputs` | The structured, Zod-validated result of a run: assumptions, missing information, confidence, review checklist, approval state, and per-run model/token usage metadata |
+| Table | Purpose | Key columns |
+|---|---|---|
+| `workflow_templates` | Registry of available AI workflows — global, **not** org-scoped | `key` (unique, e.g. `draft_email`), `product_mode` (`partner`\|`founder`\|`both`), `input_schema` (jsonb), `prompt_version`, `output_schema_key`, `requires_approval`, `created_at` |
+| `workflow_runs` | One invocation: what was assembled and sent to the model, for debugging a bad output against its actual context | `workflow_template_id`, `org_id`, `initiated_by`, `input_snapshot` (jsonb — user prompt + full `AssembledContext`), `status` (`pending`\|`completed`\|`failed`), `created_at` |
+| `outputs` | The structured, Zod-validated result of a run | `workflow_run_id`, `org_id`, `output_type`, `draft_content` (text — current human-readable draft, overwritten if edited), `structured_content` (jsonb — `{subject, body, tone_notes, context_sources_used, confidence_flag}`, kept in sync with edits), `status` (`draft`\|`approved`\|`edited_and_approved`\|`rejected`), `created_at` |
+| `approvals` | One row per human review action — created only when a human actually acts, not eagerly at generation time | `output_id`, `approver_id`, `status` (`pending`\|`approved`\|`rejected`\|`edited_and_approved`), `edited_content` (nullable), `approved_at`. **No `org_id` column** (not in the source spec) — RLS scopes via a join to `outputs.org_id` instead of a direct membership check. |
+| `human_value_entries` | Partner-only: free-text tags a human attaches on approval, distinguishing what they added from what the AI drafted | `output_id`, `org_id`, `created_by`, `context_added`, `judgment_applied`, `preference_considered`, `risk_identified`, `recommendation_made`, `corrections_made` (all optional text), `created_at` |
+
+`workflow_templates` is seeded by the migration itself (one row, `key = "draft_email"`), not by `scripts/seed.ts` — it's platform config, not per-workspace demo data. `outputs.structured_content` is *not* immutable: approving with an edited subject/body overwrites it (and `draft_content`) with the final text, while `approvals.edited_content` keeps an audit trail of what changed. See [ai-orchestration.md](ai-orchestration.md) and [decisions.md](decisions.md).
+
+**Not built** (deliberately, not deferred by accident): a `workflows` table keyed by dotted `product.workflow` names (collapsed into `workflow_templates.key` + `product_mode` instead); `assumptions`/`missing_information`/`review_checklist` as separate columns (folded into the single `structured_content` jsonb blob, since this workflow's actual output contract — set by this milestone's spec — is `{subject, body, tone_notes, context_sources_used, confidence_flag}`, narrower than `ai-orchestration.md`'s original general design); a drafts-history/"AI Workbench" list view (an output is only reachable via the direct link produced right after generating it).
 
 ## Milestone 4 — planned (Product Operations)
 
 | Table | Purpose | Product |
 |---|---|---|
 | `delivery_tasks` | Tasks-by-client with due dates, status, and output attachment | Partner |
-| `human_value_entries` | Records of human judgment/correction applied on top of an AI draft, for the Weekly Client Value Report | Partner |
 | `follow_ups` | Overdue/upcoming follow-up tracking derived from `contacts` | Founder |
 
 ## Milestone 5 — planned (Hardening)
@@ -68,8 +73,11 @@ Plan-derived entitlements (`subscriptions`/`entitlements`) were built early, in 
 
 - `product_mode`: `partner`, `founder`
 - `membership_role`: `owner`, `admin`, `member`, `client_reviewer`, `certified_operator` — only `owner`/`admin`/`member` have defined behavior in the MVP; the other two exist now so the permission model doesn't need a breaking migration later (see [roles-and-permissions.md](roles-and-permissions.md))
-- `approval_status` (M3+): `draft`, `pending_review`, `approved`, `rejected`, `revised`
+- `workflow_product_mode`: `partner`, `founder`, `both` (distinct from `product_mode` — a workspace's mode vs. which mode(s) a workflow_template applies to)
+- `workflow_run_status`: `pending`, `completed`, `failed`
+- `output_status`: `draft`, `approved`, `edited_and_approved`, `rejected`
+- `approval_status`: `pending`, `approved`, `rejected`, `edited_and_approved` — a distinct enum from `output_status` on the `approvals` table itself; in practice every `approvals` row is created already carrying its final status (see Milestone 3 above)
 
 ## Isolation guarantee
 
-No table in this model is ever queried without an RLS policy scoping it to `org_id IN (SELECT org_id FROM memberships WHERE user_id = auth.uid())` (or a narrower policy for owner/admin-only actions). Verified live for every table implemented so far — Milestone 1 (`organizations`, `memberships`, `audit_events`), Milestone 1.5 (`subscriptions`, `entitlements`, `usage_events`, `notifications`), and Milestone 2 (`client_profiles`, `contacts`, `knowledge_base_items`) — by creating workspaces under different users and confirming neither reads, writes, updates, or deletes the other's rows. See docs/build-plan.md for the specific checks run per milestone.
+No table in this model is ever queried without an RLS policy scoping it to `org_id IN (SELECT org_id FROM memberships WHERE user_id = auth.uid())` (or a narrower policy for owner/admin-only actions, or — `approvals` only — a join to its parent `outputs.org_id`). Verified live for every table implemented so far — Milestone 1 (`organizations`, `memberships`, `audit_events`), Milestone 1.5 (`subscriptions`, `entitlements`, `usage_events`, `notifications`), Milestone 2 (`client_profiles`, `contacts`, `knowledge_base_items`), and Milestone 3 (`workflow_runs`, `outputs`, `approvals`, `human_value_entries`, plus confirming `workflow_templates` is readable by any authenticated user since it carries no tenant data) — by creating workspaces under different users and confirming neither reads, writes, updates, or deletes the other's rows. See docs/build-plan.md for the specific checks run per milestone.

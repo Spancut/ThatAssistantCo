@@ -14,6 +14,9 @@ import {
   type KnowledgeItemFormState,
 } from "@/lib/validations/knowledge";
 import type { PipelineStage } from "@/lib/types/database";
+import { draftPromptFormSchema, ENTITLEMENT_BLOCKED_MESSAGE, type DraftGenerationState } from "@/lib/validations/ai";
+import { assembleContactContext } from "@/lib/ai/context";
+import { generateDraftEmail } from "@/lib/ai/orchestrator";
 
 export type ContactFormState = { error?: string; success?: boolean };
 
@@ -190,4 +193,35 @@ export async function deleteContactKnowledgeItemAction(
   });
 
   revalidatePath(`/${orgSlug}/contacts/${contactId}`);
+}
+
+export async function generateContactDraftAction(
+  orgSlug: string,
+  contactId: string,
+  _prevState: DraftGenerationState,
+  formData: FormData
+): Promise<DraftGenerationState> {
+  const parsed = draftPromptFormSchema.safeParse({ userPrompt: formData.get("userPrompt") });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+
+  const { supabase, user, workspace } = await requireWorkspace(orgSlug);
+
+  const context = await assembleContactContext(supabase, workspace.id, contactId);
+
+  const result = await generateDraftEmail(supabase, {
+    orgId: workspace.id,
+    userId: user.id,
+    userPrompt: parsed.data.userPrompt,
+    context,
+  });
+
+  if (!result.ok) {
+    return {
+      error: result.reason === "entitlement_blocked" ? ENTITLEMENT_BLOCKED_MESSAGE : result.error,
+    };
+  }
+
+  redirect(`/${orgSlug}/outputs/${result.outputId}`);
 }

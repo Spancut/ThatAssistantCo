@@ -10,12 +10,15 @@ import {
   archiveClientAction,
   addClientKnowledgeItemAction,
   deleteClientKnowledgeItemAction,
+  generateClientDraftAction,
 } from "@/app/[orgSlug]/clients/actions";
 import { ClientForm } from "@/components/clients/client-form";
 import { KnowledgeSection } from "@/components/knowledge/knowledge-section";
+import { DraftGeneratorForm } from "@/components/ai/draft-generator-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { checkEntitlement } from "@/lib/server/entitlements";
 
 export const metadata: Metadata = { title: "Client — ThatAssistant" };
 
@@ -38,6 +41,7 @@ export default async function ClientDetailPage({
   if (!client) notFound();
 
   const knowledgeItems = await listKnowledgeItemsForClient(supabase, workspace.id, clientId);
+  const entitlement = await checkEntitlement(workspace.id, "ai_generations_per_month", supabase);
 
   return (
     <div className="max-w-2xl space-y-8">
@@ -71,6 +75,19 @@ export default async function ClientDetailPage({
         </CardHeader>
         <CardContent>
           <ClientForm orgSlug={orgSlug} client={client} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent>
+          <DraftGeneratorForm
+            action={generateClientDraftAction.bind(null, orgSlug, clientId)}
+            title="Draft email"
+            description={`Draft an email to ${client.name}, in their brand voice, for you to review and send yourself.`}
+            placeholder="What's this email about, or what did they ask?"
+            buttonLabel="Draft email"
+            remaining={entitlement.remaining}
+          />
         </CardContent>
       </Card>
 
