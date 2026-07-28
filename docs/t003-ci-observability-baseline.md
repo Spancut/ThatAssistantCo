@@ -54,6 +54,13 @@ project/DSN and staging environment access. The exact test and teardown procedur
 in `docs/observability.md`. T003 must not be marked fully accepted until the safe
 event is observed and the fictional raw-content sentinel is confirmed absent.
 
+The T003 Vercel check also fails immediately and exposes only an authenticated
+deployment-inspection link/command, not build logs. The same external deployment
+condition affected T001 and T002. Local and GitHub Actions production builds pass,
+so no evidence currently attributes the failure to T003 application code. An
+authorised Vercel operator must inspect the deployment log before staging acceptance;
+no provider setting or deployment was changed in this ticket.
+
 ## Local validation
 
 - Frozen pnpm install: passed.
@@ -72,6 +79,9 @@ event is observed and the fictional raw-content sentinel is confirmed absent.
   not recognise detached pull-request merge commits. T003 added a narrow fallback
   to GitHub's `GITHUB_HEAD_REF`/`GITHUB_REF_NAME`; branch naming rules remain
   unchanged.
+- GitHub Actions run `30340523193`: passed end to end in 1m19s with pinned Node,
+  Corepack/pnpm, frozen install, all deterministic checks, Chromium installation,
+  and the browser baseline.
 
 ## Acceptance criteria
 

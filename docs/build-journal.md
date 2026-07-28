@@ -305,6 +305,9 @@ T001 — Claude Code governance. Do not begin until explicitly approved.
 - No Sentry/staging credentials are present, so the required external event
   appearance and raw-content absence check remains pending. Exact execution and
   teardown instructions are in `docs/observability.md`.
+- GitHub Actions passed the complete quality and browser job. Vercel failed
+  immediately with logs available only through authenticated provider inspection;
+  the same external condition existed on T001/T002 and no provider change was made.
 
 ### Boundary
 
