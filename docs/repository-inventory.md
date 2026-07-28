@@ -1,122 +1,102 @@
 # Repository inventory
 
-Audit date: 2026-07-28
+Audit updated: 2026-07-28 after T000
 
 Repository: `D:\ThatAssistantCo`
 
-Branch at audit: `codex/specification-traceability`
+Active branch: `codex/t000-repository-bootstrap`
 
-## Summary
+## Current state
 
-The repository contains two materially different bodies of work:
+The active root is a clean ThatAssistant OS VA Edition repository. Project Atlas is not mixed into the active implementation. Its final implementation state is recoverable from:
 
-1. The authoritative ThatAssistant OS VA Edition documentation package and the initialized source-of-truth documents.
-2. A committed, runnable Project Atlas application for “Partner” and “Founder” product modes. It predates the VA Edition package and conflicts with the current product model.
+- Branch: `archive/project-atlas-foundation`
+- Commit: `d316d9101f647549d73390a457eb59aa054f258c`
 
-There were 160 tracked files before this audit branch’s new reports. Ignored/generated trees materially increase the physical file count, especially `node_modules/` and `.next/`.
+The active application is only the T000 placeholder shell. It contains no authentication, database, AI, workflow, integration, or Release 1 feature.
 
-## Documentation
+## Top-level inventory
 
-### Current authoritative or controlling
-
-- Root: `AGENTS.md`.
-- Initialized controls: `docs/source-of-truth-index.md`, `docs/open-decisions.md`, `docs/product-summary.md`, `docs/domain-model.md`, `docs/release-1-scope.md`, `docs/build-journal.md`.
-- Supplied package: `thatassistant-os-project-docs-v1.1/README.md`, `CLAUDE.md`, `MANIFEST.json`, the full `docs/00`–`10` series, `docs/11-build-specification/README.md`, `11A-documentation-setup.md`, bootstrap prompt, fixture instructions, and `What you should do next.docx`.
-- Governing implementation roadmap: `thatassistant-os-project-docs-v1.1/What you should do next.docx`.
-
-### Historical / legacy documentation
-
-- Root `README.md` and `CLAUDE.md`.
-- `docs/product-brief.md`, `mvp-scope.md`, `architecture.md`, `data-model.md`, `roles-and-permissions.md`, `security-and-approval-policy.md`, `ai-orchestration.md`, `build-plan.md`, and `decisions.md`.
-
-These describe Project Atlas’s Partner/Founder product, OpenAI email drafting, and Milestones 1–5. They are useful only as implementation evidence and should not govern VA Edition requirements.
-
-### Duplicate or overlapping documentation
-
-- Two source indexes: package `docs/00-source-of-truth-index.md` and repository `docs/source-of-truth-index.md`.
-- Two product summaries: legacy `docs/product-brief.md` and current `docs/product-summary.md`.
-- Two scope documents: legacy `docs/mvp-scope.md` and current `docs/release-1-scope.md`.
-- Two AI documents: legacy `docs/ai-orchestration.md` and package `docs/07-ai-orchestration.md`.
-- Two architecture documents: legacy `docs/architecture.md` and package `docs/06-technical-architecture.md`.
-- Two data/domain documents: legacy `docs/data-model.md` and current `docs/domain-model.md`.
-- Legacy security/roles documents overlap package `docs/08-security-permissions.md`.
-- Root and package `CLAUDE.md` files have different histories and purposes.
-
-## Source code and UI
-
-| Area | Paths | Classification |
+| Item | Classification | Purpose |
 |---|---|---|
-| Next.js routes | `app/` | Legacy Project Atlas; conflicts with VA Edition navigation and product model |
-| Auth/onboarding | `app/(auth)/`, `app/auth/`, `app/onboarding/` | Potentially reusable with modification |
-| Partner client UI | `app/[orgSlug]/clients/`, `components/clients/` | Reusable patterns only; data model and UX require major modification |
-| Founder contacts UI | `app/[orgSlug]/contacts/`, `components/contacts/` | Obsolete for Release 1; possible later reference |
-| AI output UI | `app/[orgSlug]/outputs/`, `components/ai/` | Conflicts with roadmap workflow; limited review-form patterns reusable |
-| Shell/dashboard/settings | `app/[orgSlug]/`, `components/shell/`, `components/dashboard/`, `components/settings/` | Reusable with modification; current navigation is wrong |
-| Shared UI primitives | `components/ui/` | Reusable, subject to accessibility/design verification |
-| Server services | `lib/server/` | Mixed; audit, auth-aware access, and entitlement patterns may be reusable |
-| AI services | `lib/ai/` | Architecture pattern partly reusable; provider, contracts, context, prompts, and workflow are incompatible |
-| Supabase clients | `lib/supabase/` | Reusable with modification after stack/version verification |
-| Validation | `lib/validations/` | Patterns reusable; current schemas are legacy-domain specific |
-| Generated DB types | `lib/types/database.ts` | Historical/generated from legacy schema; obsolete after new migrations |
-| Styling/assets | `app/globals.css`, `public/*.svg`, `app/favicon.ico` | Generic assets; review during T000/T012 |
+| `.git/` | KEEP | Git history, branches, and recoverable archive |
+| `.github/` | KEEP | Pull-request and numbered-ticket issue templates |
+| `app/` | KEEP | New T000-only Next.js placeholder layout/page/styles |
+| `docs/` | KEEP | Current specifications, audits, roadmap, decisions, templates, and build record |
+| `tests/` | KEEP | New T000 unit and browser baseline only |
+| `thatassistant-os-project-docs-v1.1/` | KEEP | Supplied authoritative package and governing Word document |
+| `.env.example` | KEEP | Non-secret T000 public URL placeholder only |
+| `.gitignore` | KEEP | Dependency, build, test, environment, and secret-file exclusions |
+| `.prettierignore`, `.prettierrc.json` | KEEP | T000 formatting configuration |
+| `AGENTS.md` | KEEP | Repository authority, safety, and delivery rules |
+| `CONTRIBUTING.md` | KEEP | Concise ticket and safety contribution workflow |
+| `README.md` | KEEP | Product/stage/authority/setup/checks/next-ticket entry point |
+| `eslint.config.mjs` | KEEP | T000 lint baseline |
+| `next.config.ts` | KEEP | Empty typed Next.js configuration |
+| `package.json` | KEEP | Pinned T000 dependencies and scripts |
+| `playwright.config.ts` | KEEP | T000 Chromium smoke-test baseline |
+| `pnpm-lock.yaml` | KEEP | Reproducible dependency lock |
+| `pnpm-workspace.yaml` | KEEP | Narrow native build-script allowlist |
+| `tsconfig.json` | KEEP | Strict TypeScript configuration |
+| `vitest.config.ts` | KEEP | T000 unit-test baseline |
 
-## Database
+## Retained documentation
 
-Four tracked migrations exist:
+- Source hierarchy and decisions: `source-of-truth-index.md`, `open-decisions.md`.
+- Product and scope: `product-summary.md`, `domain-model.md`, `release-1-scope.md`.
+- Audit and planning: traceability matrix, progress, legacy audit, roadmap, gap analysis, readiness review.
+- Delivery records: `build-journal.md`, `t000-repository-bootstrap.md`.
+- Approved templates: `docs/adr/000-template.md`, `docs/tickets/000-template.md`, `.github/` templates.
+- Complete supplied package, including `What you should do next.docx`.
 
-- `20260724000001_init_platform_schema.sql`
-- `20260724000002_billing_entitlements_notifications.sql`
-- `20260724000003_clients_contacts_knowledge.sql`
-- `20260724000004_ai_workflows.sql`
+## New T000 application and tests
 
-They implement organisations, memberships, audit, entitlements, notifications, Partner clients, Founder contacts, ungoverned knowledge items, OpenAI workflow templates/runs, outputs, approvals, and human-value entries. They do not implement the governing canonical VA Edition schema. They must not be applied to a new VA Edition environment without an explicit reuse/migration decision.
+- `app/layout.tsx`
+- `app/page.tsx`
+- `app/styles.css`
+- `tests/unit/bootstrap.test.ts`
+- `tests/e2e/bootstrap.spec.ts`
 
-## Scripts
+The page communicates only product name, edition, Release 0/T000 status, and the numbered-ticket boundary.
 
-- `scripts/seed.ts`: legacy hosted-Supabase seed using personally controlled Gmail aliases and Partner/Founder fixtures. Obsolete and unsafe for the roadmap’s fictional-fixture standard without modification.
-- Package `prompts/00-claude-code-bootstrap.md`: current template.
-- No Inngest, environment-validation, health-check, CI, migration-verification, or roadmap ticket scripts exist.
+## Removed Project Atlas surface
 
-## Tests
+T000 removed 133 tracked legacy files (22,441 deleted lines), including:
 
-- Unit tests: seven Vitest files, 48 tests, all passing during this audit.
-- Browser tests: five Playwright spec/helper files for legacy auth, billing, entities, and live OpenAI drafting.
-- Test support: `test/helpers/fake-supabase.ts`, `test/mocks/server-only.ts`.
-- Roadmap fixture directory contains only instructions; four VA Edition fixture clients do not exist.
-- Missing: persistent database/RLS suite, client-level isolation suite, workflow engine/idempotency/concurrency suite, Anthropic mock/evaluations, prompt-injection fixtures, accessibility gate, mobile VA critical path, and full Request-to-Delivery browser suite.
+- Old `app/`, `components/`, `lib/`, `public/`, `scripts/`, `supabase/`, `e2e/`, and `test/` trees.
+- Four legacy database migrations.
+- Partner/Founder application routes and product-mode UI.
+- OpenAI email-drafting code, prompts, output/approval UI, and live browser tests.
+- Hosted-Supabase seed/configuration and personal-email fixture instructions.
+- npm lockfile and abandoned dependency/configuration files.
+- Nine historical Project Atlas requirement documents.
+- Old root `README.md`, `CLAUDE.md`, and environment example.
 
-## Configuration
+Generated/local artifacts removed:
 
-- Application: `package.json`, `package-lock.json`, `tsconfig.json`, `next.config.ts`, `eslint.config.mjs`, `postcss.config.mjs`, `components.json`.
-- Tests: `vitest.config.ts`, `playwright.config.ts`.
-- Supabase: `supabase/config.toml`, `supabase/.gitignore`.
-- Environment: `.env.example` (tracked), `.env.local` (ignored).
-- Git: `.gitignore`.
-- There is no pnpm lockfile, CI workflow, Prettier configuration, Inngest configuration, Sentry configuration, PostHog setup, Vercel project metadata, or architecture-decision directory.
+- `.next/`
+- `node_modules/` from the legacy install
+- `supabase/.temp/`
+- `next-env.d.ts`
+- `tsconfig.tsbuildinfo`
+- `.env.local`
 
-## Assets
+The new T000 dependency install regenerates `node_modules/`, and validation regenerates `.next/`, `next-env.d.ts`, and TypeScript cache locally. All remain ignored and are not archival material.
 
-- `public/file.svg`, `globe.svg`, `next.svg`, `vercel.svg`, `window.svg`.
-- `app/favicon.ico`.
-- Package `.DS_Store` metadata is ignored and obsolete.
-- No authoritative VA Edition brand asset set is present.
+## Deferred / regenerate later
 
-## Generated, ignored, and local-only files
+- Domain modules, Supabase directories, Inngest, prompts, schemas, and domain test suites are created only by their numbered tickets.
+- Product assets and design-system components are deferred to the relevant UI ticket.
+- Root `CLAUDE.md`, detailed architecture docs, hooks, and full governance package remain T001 work. T000 includes only templates explicitly requested by the approved bootstrap task.
 
-- `.next/`: generated Next.js build/cache output; obsolete after any clean bootstrap.
-- `node_modules/`: generated dependency installation; reproducible only from the legacy npm lockfile.
-- `next-env.d.ts`: generated Next.js type declaration.
-- `tsconfig.tsbuildinfo`: generated TypeScript incremental cache.
-- `supabase/.temp/`: generated Supabase CLI link/runtime metadata; includes environment-specific project references and must not be treated as source.
-- `.env.local`: local secrets/configuration; ignored and not inspected for values.
-- `thatassistant-os-project-docs-v1.1/.DS_Store` and `docs/.DS_Store`: historical macOS metadata.
+## Obsolete historical references
 
-## Obsolete or conflicting artifacts
+The `docs/legacy-audit.md` and traceability history retain filenames and evidence from the pre-cleanup audit. They describe archived state, not active files.
 
-- All Partner/Founder mode requirements, routes, seed fixtures, enums, and navigation conflict with VA Edition.
-- OpenAI-specific environment, SDK, prompt, and live E2E path conflict with the governing Anthropic adapter requirement.
-- `package-lock.json` and npm commands conflict with the governing pnpm requirement.
-- Legacy migrations conflict with the canonical roadmap schema and client-level scoping requirements.
-- Root legacy documentation conflicts with current authority and should be archived with the old implementation.
+## Secrets and local state
 
-No files were deleted or moved during this audit.
+- No `.env.local` remains.
+- `.env.example` contains no credential values.
+- No Supabase project link/temp metadata remains active.
+- Secret-bearing extensions and environment files are ignored.
+- No real client fixture or provider payload exists in the active application/tests.

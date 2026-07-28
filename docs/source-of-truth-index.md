@@ -38,14 +38,14 @@ If sources at any level conflict, do not guess. Record the conflict in `docs/ope
 | `.../prompts/00-claude-code-bootstrap.md` | Template | Readiness-review prompt for a future coding agent | Template only | Says no stack decisions and no code | Bootstrap/readiness |
 | `.../tests/fixtures/README.md` | Template | Rules for fictional, anonymized evaluation fixtures | Governing fixture safety when tests begin | No current fixtures supplied | Test data safety |
 | `.../What you should do next.docx` | Authoritative implementation roadmap | Complete 27-section Part 11 build specification, fixed stack, schema, workflows, releases R0–R6 and tickets T000–T038 | Governing for implementation unless explicitly superseded | Product-owner instruction resolves former OD-001 and OD-003; hierarchy interpretation remains recorded | Full implementation detail |
-| `.../.DS_Store` | Historical metadata | macOS folder metadata; no specification content | None | Omitted from manifest; Git-ignored | None |
-| `.../docs/.DS_Store` | Historical metadata | macOS folder metadata; no specification content | None | Omitted from manifest; Git-ignored | None |
+| `.../.DS_Store` | Removed metadata | macOS folder metadata; no specification content | None | Removed from the active root by T000 | None |
+| `.../docs/.DS_Store` | Removed metadata | macOS folder metadata; no specification content | None | Removed from the active root by T000 | None |
 
 `...` in the table means `thatassistant-os-project-docs-v1.1`.
 
-## Excluded legacy repository surface
+## Archived legacy repository surface
 
-The following pre-date the authoritative package and must not influence the rebuild:
+The following pre-date the authoritative package and were removed from the active root by T000. They remain recoverable on `archive/project-atlas-foundation` at `d316d9101f647549d73390a457eb59aa054f258c` and must not influence the rebuild:
 
 - Production-looking code and assets: `app/`, `components/`, `lib/`, `public/`, `scripts/`, `supabase/`.
 - Existing tests: `e2e/`, `test/`.
@@ -55,8 +55,8 @@ The following pre-date the authoritative package and must not influence the rebu
 - Pre-existing topic documents in `docs/`: `ai-orchestration.md`, `architecture.md`, `build-plan.md`, `data-model.md`, `decisions.md`, `mvp-scope.md`, `product-brief.md`, `roles-and-permissions.md`, and `security-and-approval-policy.md`.
 - Git commits through `d316d91` (“Milestone 3”) and their Project Atlas assumptions.
 
-These artifacts were identified by path and Git history only and were not used to derive the initialized product specification. Their deletion, archival, or reuse requires an explicit decision (OD-005).
+OD-005 authorized their archival and removal. Reuse of any specific artifact requires a later explicit ticket-level decision and review.
 
 ## Coverage check
 
-The inventory contains all 21 files physically supplied in the package: 19 substantive files plus two `.DS_Store` metadata files. The manifest lists 17 files and omits itself, the Word specification, and the two metadata files; that mismatch is intentionally unresolved.
+The active package contains all 19 substantive supplied files. T000 removed two `.DS_Store` metadata files because they carried no specification content. The manifest lists 17 files and omits itself and the Word specification; that historical mismatch remains documented.

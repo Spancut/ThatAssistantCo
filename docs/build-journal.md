@@ -112,3 +112,67 @@ Product-owner decision review for OD-001, OD-003, and OD-005. After those decisi
 ### Next task
 
 Approve and execute a recoverable Project Atlas archive strategy, then explicitly authorize T000. Do not begin feature work before the clean repository bootstrap.
+
+## 2026-07-28 — T000 Repository bootstrap
+
+### Outcome
+
+- T000 started and completed on `codex/t000-repository-bootstrap`.
+- OD-005 resolved: Project Atlas was archived in recoverable Git history and removed from the active root.
+- A pinned, strict, testable Next.js placeholder foundation was created.
+- No authentication, database, AI, workflow, integration, or Release 1 feature was added.
+
+### Archive and cleanup
+
+- Archive branch: `archive/project-atlas-foundation`.
+- Archive commit: `d316d9101f647549d73390a457eb59aa054f258c`.
+- Cleanup commit: `407049a`.
+- Bootstrap foundation commit: `e3754e2`.
+- Removed 133 tracked legacy files and 22,441 lines, including old application routes/components/services, migrations, tests, scripts, assets, dependencies/configuration, and historical requirement docs.
+- Removed legacy `.next/`, `node_modules/`, `.env.local`, `supabase/.temp/`, `next-env.d.ts`, and TypeScript cache.
+- Generated artifacts were not treated as archive material.
+
+### Governance and bootstrap files
+
+- Created new README, contribution guidance, ADR/ticket templates, PR/issue templates, and `docs/t000-repository-bootstrap.md`.
+- Updated `AGENTS.md`, source index, open decisions, repository inventory, traceability matrix, and implementation progress.
+- Created minimal placeholder `app/`, T000 unit/browser tests, and pinned pnpm/Next/TypeScript/lint/format/test configuration.
+
+### Selected versions
+
+- Node.js 24.11.0
+- pnpm 11.17.0
+- Next.js 16.2.12
+- React / React DOM 19.2.8
+- TypeScript 5.9.3
+- ESLint 9.39.5
+- Prettier 3.9.6
+- Vitest 4.1.10
+- Playwright Test 1.61.1
+
+TypeScript 7.0.2 and ESLint 10.7.0 were evaluated but rejected because the current Next.js lint dependency graph reported unmet peer ranges. pnpm reports no peer issues with the selected compatible versions.
+
+### Validation
+
+- Archive ref and commit verified.
+- Legacy production paths absent from active source.
+- Authoritative package and governing Word document present.
+- pnpm lockfile supply-chain policy: passed.
+- `pnpm peers check`: passed.
+- `pnpm format:check`: passed.
+- `pnpm lint`: passed.
+- `pnpm typecheck`: passed.
+- `pnpm test`: 1/1 passed.
+- `pnpm build`: passed; placeholder `/` only.
+- `pnpm test:e2e`: 1/1 Chromium smoke test passed.
+- Legacy browser tests were not run.
+
+### Known limitations
+
+- Root `CLAUDE.md`, architecture documentation package, complete ADR/ticket governance, and deterministic safe checks remain T001.
+- Local checkout remote/push/PR availability is evaluated after the final T000 commit.
+- OD-006 and OD-007 remain open and do not block T000.
+
+### Next approved ticket
+
+T001 — Claude Code governance. Do not begin until explicitly approved.

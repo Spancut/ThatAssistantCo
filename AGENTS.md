@@ -5,7 +5,7 @@
 - This repository is being reset for **ThatAssistant OS — VA Edition**, a Human + AI delivery operating system for professional virtual and executive assistants.
 - The supplied package at `thatassistant-os-project-docs-v1.1/` and the initialized documents in `docs/` are the only current product sources.
 - Use the hierarchy in `docs/source-of-truth-index.md`. Never resolve a contradiction by guessing; record it in `docs/open-decisions.md`.
-- The pre-existing application, migrations, tests, configuration, root documentation, and Git history are suspected Project Atlas legacy material. Do not use them as requirements, patterns, or implementation foundations unless the product owner explicitly re-authorizes a named artifact.
+- Project Atlas is archived on `archive/project-atlas-foundation` at `d316d9101f647549d73390a457eb59aa054f258c` and removed from the active root. Do not use archived artifacts as requirements, patterns, or implementation foundations unless a later approved ticket explicitly re-authorizes a named artifact.
 
 ## Safety boundaries
 
@@ -28,7 +28,7 @@
 - Use typed boundaries and runtime validation for requests, events, stored structured data, and AI output.
 - Add tests proportionate to risk: domain and validation tests, tenant/client isolation tests, workflow transition and idempotency tests, AI evaluations, and critical browser journeys.
 - Do not weaken security controls, skip validation, invent requirements, or silently broaden scope to make a ticket pass.
-- Do not delete or rewrite legacy files as part of documentation initialization. Legacy disposition requires a separate, explicitly approved task.
+- Do not restore or copy archived legacy files into the active root without explicit ticket-level authorization and review.
 
 ## Documentation and handoff
 

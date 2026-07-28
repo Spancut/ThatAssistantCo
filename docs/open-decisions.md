@@ -35,16 +35,18 @@ Only genuine contradictions or choices with implementation impact belong here. P
 - **Safe options:** (A) treat 1A and 1B as internal increments of Blueprint Release 1; (B) rename milestones; (C) retain both labels with a published mapping.
 - **Decision (2026-07-28):** Release 1A and 1B are internal implementation increments of Blueprint Release 1; both must pass before Blueprint Release 1 is complete.
 
-## Open decisions
-
 ### OD-005 — How should the old Project Atlas implementation be disposed?
 
 - **Conflicting inputs:** the product owner declared Project Atlas abandoned and the folder clean; repository inspection found a committed Next.js/Supabase application through Milestone 3, plus tests, migrations, generated output, dependencies, and old documentation.
 - **Exact issue:** the code physically coexists with the new package and could contaminate or obstruct a clean bootstrap.
 - **Impact:** repository structure, history, dependency choices, security assumptions, build commands, and accidental reuse.
 - **Safe options:** (A) archive the legacy tree/tag and establish a clean root; (B) create a new empty repository and import only approved docs; (C) retain legacy files in place but explicitly quarantine them until a later controlled replacement.
-- **Recommendation:** B is cleanest; A is acceptable if historical traceability in this repository matters. Do not perform either without explicit approval and a recovery plan.
-- **Blocked:** production implementation and repository bootstrap. No files may be deleted automatically.
+- **Decision (2026-07-28):** archive the legacy implementation in recoverable Git history, then clean the active root before T000 is complete.
+- **Rationale:** Project Atlas was created from an earlier brief and conflicts with the approved VA Edition specification, tenant/client scoping model, workflow architecture, and release sequence.
+- **Implementation:** `archive/project-atlas-foundation` points to legacy commit `d316d9101f647549d73390a457eb59aa054f258c`. The active branch removed legacy code, migrations, tests, dependencies, generated output, configuration, scripts, assets, and historical requirements.
+- **Status:** resolved by T000.
+
+## Open decisions
 
 ### OD-006 — Should exceptions and completion evidence be first-class records?
 

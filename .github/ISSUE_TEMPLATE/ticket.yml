@@ -1,0 +1,30 @@
+name: Numbered build ticket
+description: Track one approved ticket from the governing roadmap.
+title: "[T000] "
+labels: []
+body:
+  - type: input
+    id: ticket
+    attributes:
+      label: Ticket
+      description: Exact approved ticket number and title.
+    validations:
+      required: true
+  - type: textarea
+    id: specification
+    attributes:
+      label: Specification sections
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+    validations:
+      required: true
+  - type: textarea
+    id: exclusions
+    attributes:
+      label: Explicitly out of scope
+    validations:
+      required: true
