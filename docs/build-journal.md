@@ -314,3 +314,17 @@ T001 — Claude Code governance. Do not begin until explicitly approved.
 - T003 is not fully accepted until staging Sentry evidence exists.
 - T010 is the next roadmap ticket but is not authorised by this work.
 - [x] Work stopped before T010.
+
+### External acceptance access check
+
+- Existing Vercel project/log access was verified without changing provider state.
+- Deployment failure was confirmed at output discovery: the project incorrectly
+  overrides the Output Directory to `public` for a Next.js build.
+- The minimal correction is to clear that override and retain the Next.js framework
+  output. It was not applied because the required provider-access gate was
+  incomplete.
+- No authorised Sentry organisation/project session, DSN, CLI authentication, or
+  event-inspection permission was available.
+- No account, project, environment variable, deployment, controlled error, or
+  provider setting was created or changed.
+- T003 remains externally pending and work stopped before T010.

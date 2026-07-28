@@ -83,6 +83,14 @@ An authorised staging operator must:
 The route returns 404 outside staging or when disabled, 401 for a bad token, 202
 after capture/flush, and never returns Sentry or request details.
 
+## Current external access status
+
+As of 2026-07-28, no authorised Sentry organisation/project session, DSN, or
+event-inspection access is available to the implementation agent. Do not create a
+replacement account or project. Acceptance remains paused until the product owner
+provides or opens an authorised non-production Sentry project session with project
+configuration and event-inspection permission.
+
 ## Incident-safe operation
 
 If redaction is uncertain, disable Sentry rather than broadening event content. Do

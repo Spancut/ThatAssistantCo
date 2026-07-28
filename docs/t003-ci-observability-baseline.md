@@ -54,12 +54,26 @@ project/DSN and staging environment access. The exact test and teardown procedur
 in `docs/observability.md`. T003 must not be marked fully accepted until the safe
 event is observed and the fictional raw-content sentinel is confirmed absent.
 
-The T003 Vercel check also fails immediately and exposes only an authenticated
-deployment-inspection link/command, not build logs. The same external deployment
-condition affected T001 and T002. Local and GitHub Actions production builds pass,
-so no evidence currently attributes the failure to T003 application code. An
-authorised Vercel operator must inspect the deployment log before staging acceptance;
-no provider setting or deployment was changed in this ticket.
+### 2026-07-28 acceptance-access check
+
+- Vercel project and deployment-log access: available through the existing
+  authorised browser session.
+- Vercel environment-setting and redeploy controls: visible for the authorised
+  non-production project; no change was attempted.
+- Exact failed stage: post-build output discovery.
+- Sanitised Vercel error: no output directory named `public` exists after the build.
+- Root cause: the Vercel project Output Directory is configured as `public`, which
+  is not the Next.js build output.
+- Smallest T003 correction: clear the project Output Directory override so Vercel's
+  Next.js framework preset uses the framework output. This was not applied because
+  the required Sentry access gate was incomplete.
+- Sentry organisation/project, DSN, event-inspection permission, and provider
+  configuration access: unavailable. No workspace credential or CLI session exists,
+  and the browser is not signed in to an authorised Sentry account.
+
+The instructions require all provider access before configuration changes. Therefore
+no Vercel setting, environment variable, deployment, Sentry resource, or endpoint
+state was changed. T003 remains externally pending.
 
 ## Local validation
 
@@ -94,6 +108,9 @@ no provider setting or deployment was changed in this ticket.
   boundary.
 - [ ] Intentional error appears in the authorised staging Sentry project and raw
   fixture content is absent (external credentials/access required).
+- [ ] Vercel Output Directory override cleared and preview deployment verified
+  (correction identified but not applied because the provider access gate is
+  incomplete).
 
 ## Stop boundary
 

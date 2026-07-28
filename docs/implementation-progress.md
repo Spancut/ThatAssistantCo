@@ -30,7 +30,7 @@ Percentages measure the active root against the governing VA Edition roadmap dur
 | Security | 20% | T003 adds deterministic telemetry minimisation and safe logging; identity, RLS, application permissions, and later security gates remain |
 | Testing | 15% | T003 adds privacy/correlation/logging/staging-gate tests and CI; SQL/RLS, workflow, AI evaluation, accessibility, and release gates remain |
 | Infrastructure | 65% | Local services plus CI, Sentry instrumentation, correlation IDs, and safe logs exist; staging Sentry acceptance remains external |
-| Deployment | 10% | Staging isolation and observability acceptance are documented; no hosted change was made and the external Sentry event remains pending |
+| Deployment | 10% | Vercel access confirmed an incorrect `public` Output Directory override, but no provider change was made because authorised Sentry access remains unavailable; staging acceptance is pending |
 | Documentation/governance | 100% | T001 adds the concise root CLAUDE entry point, architecture governance, complete reusable templates, aligned agent rules, and safe deterministic checks |
 
 ## Weighted overall estimate
