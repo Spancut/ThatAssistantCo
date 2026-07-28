@@ -47,8 +47,9 @@ the pinned versions.
 
 - The Docker Desktop engine/Windows pipe is not running, so Supabase
   start/status/stop and live database/API health cannot be completed on this
-  workstation. Remediation: install/start Docker Desktop using Linux containers,
-  then run the documented commands and verify `/api/health`.
+  workstation. Remediation: run
+  `winget install --exact --id Docker.DockerDesktop`, start Docker Desktop using
+  Linux containers, then run the documented commands and verify `/api/health`.
 - Vercel CLI is unavailable and GitHub's check surface exposes only the failed
   deployment link, not its logs. The T001 Vercel failure cannot be attributed to
   T002 code from local evidence. Remediation: an authorised Vercel user opens the

@@ -43,8 +43,9 @@ It performs no AI call, provider mutation, message, deployment, or external acti
 
 ## Troubleshooting
 
-- If Supabase reports that Docker is unavailable, install/start Docker Desktop and
-  retry `corepack pnpm supabase:start`.
+- If Supabase reports that Docker is unavailable, install it with
+  `winget install --exact --id Docker.DockerDesktop`, start Docker Desktop with
+  Linux containers, then retry `corepack pnpm supabase:start`.
 - If package install reports `UNABLE_TO_VERIFY_LEAF_SIGNATURE`, configure the
   organisation CA for Node or use Node 24's `--use-system-ca`. Do not set
   `strict-ssl=false` or disable certificate verification.
