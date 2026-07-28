@@ -1,0 +1,25 @@
+{
+  "package": "thatassistant-os-project-docs-v1.1",
+  "status": "Part 11A complete",
+  "authoritative_document": "docs/10-blueprint-revision-1.1.md",
+  "next_step": "Part 11B \u2014 Technology Stack Decision",
+  "files": [
+    "CLAUDE.md",
+    "README.md",
+    "docs/00-source-of-truth-index.md",
+    "docs/01-product-foundation.md",
+    "docs/02-product-scope.md",
+    "docs/03-human-ai-organisation.md",
+    "docs/04-workflows.md",
+    "docs/05-ux-specification.md",
+    "docs/06-technical-architecture.md",
+    "docs/07-ai-orchestration.md",
+    "docs/08-security-permissions.md",
+    "docs/09-validation-commercialisation.md",
+    "docs/10-blueprint-revision-1.1.md",
+    "docs/11-build-specification/11A-documentation-setup.md",
+    "docs/11-build-specification/README.md",
+    "prompts/00-claude-code-bootstrap.md",
+    "tests/fixtures/README.md"
+  ]
+}
