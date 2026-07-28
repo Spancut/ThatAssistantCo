@@ -1,3 +1,5 @@
 allowBuilds:
+  inngest-cli: true
+  protobufjs: false
   sharp: true
   unrs-resolver: true

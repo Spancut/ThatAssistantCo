@@ -1,10 +1,10 @@
 # Implementation progress
 
-Percentages measure the active root against the governing VA Edition roadmap after T001. Archived Project Atlas code does not count as implementation.
+Percentages measure the active root against the governing VA Edition roadmap after T002. Archived Project Atlas code does not count as implementation.
 
 | Area | Progress | Justification |
 |---|---:|---|
-| Platform | 25% | T000 placeholder Next.js/TypeScript/pnpm foundation is complete; domain structure is intentionally deferred |
+| Platform | 30% | T000 foundation plus T002 typed environment and health boundaries are complete; domain structure remains deferred |
 | Authentication | 0% | T011 not started |
 | Tenancy and client access | 0% | T010/T013 not started |
 | Client Brain | 0% | T016 not started |
@@ -28,11 +28,11 @@ Percentages measure the active root against the governing VA Edition roadmap aft
 | Admin / settings | 0% | Not started |
 | Reporting / analytics | 0% | T037 not started |
 | Security | 15% | Repository secret/fixture boundaries, governance scanning, and dependency lock exist; application security tickets have not started |
-| Testing | 10% | T000 unit/Playwright baselines pass; domain, SQL/RLS, workflow, AI evaluation, accessibility, and release gates remain |
-| Infrastructure | 20% | Pinned Node/pnpm/app/check baseline and read-only governance validation exist; T002/T003 services, CI, staging, and observability remain |
-| Deployment | 0% | T002/T003 and release-management evidence not started |
+| Testing | 12% | T002 adds environment-isolation and health tests; Docker-backed, SQL/RLS, workflow, AI evaluation, accessibility, and release gates remain |
+| Infrastructure | 50% | Pinned local Supabase/Inngest configuration, environment guards, health checks, and operator docs exist; Docker runtime verification and T003 remain |
+| Deployment | 5% | Staging isolation/setup is documented without provisioning; preview failure logs and release automation remain external/T003 work |
 | Documentation/governance | 100% | T001 adds the concise root CLAUDE entry point, architecture governance, complete reusable templates, aligned agent rules, and safe deterministic checks |
 
 ## Weighted overall estimate
 
-**6% complete** across the 33 detailed tickets from T000 through T038: T000 and T001 are complete; no later ticket is claimed complete.
+**9% complete** across the 33 detailed tickets from T000 through T038: T000–T002 are complete, with T002's Docker-backed runtime checks explicitly blocked; no later ticket is claimed complete.
