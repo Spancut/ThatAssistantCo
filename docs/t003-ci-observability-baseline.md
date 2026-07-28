@@ -68,6 +68,10 @@ event is observed and the fictional raw-content sentinel is confirmed absent.
 - Chromium placeholder baseline: passed, 1/1.
 - `git diff --check`: passed.
 - Docker/Supabase runtime commands were not run, per the explicit T003 instruction.
+- The first GitHub Actions run correctly exposed that the T001 governance check did
+  not recognise detached pull-request merge commits. T003 added a narrow fallback
+  to GitHub's `GITHUB_HEAD_REF`/`GITHUB_REF_NAME`; branch naming rules remain
+  unchanged.
 
 ## Acceptance criteria
 

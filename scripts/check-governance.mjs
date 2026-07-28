@@ -75,9 +75,11 @@ for (const [path, tokens] of Object.entries(requiredContent)) {
   }
 }
 
-const branch = execFileSync("git", ["branch", "--show-current"], {
+const checkedOutBranch = execFileSync("git", ["branch", "--show-current"], {
   encoding: "utf8",
 }).trim();
+const branch =
+  checkedOutBranch || process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF_NAME || "";
 const allowedBranch =
   branch === "main" ||
   branch === "master" ||
