@@ -15,6 +15,11 @@ const localEnvironment = {
   INNGEST_ENABLED: "true",
   INNGEST_DEV: "true",
   INNGEST_BASE_URL: "http://127.0.0.1:8288",
+  SENTRY_ENABLED: "false",
+  SENTRY_DSN: "",
+  NEXT_PUBLIC_SENTRY_DSN: "",
+  OBSERVABILITY_TEST_ENABLED: "false",
+  OBSERVABILITY_TEST_TOKEN: "",
 };
 
 describe("environment validation", () => {
@@ -57,6 +62,9 @@ describe("environment validation", () => {
       SUPABASE_PROJECT_ID: "thatassistant-os-staging",
       INNGEST_DEV: "false",
       INNGEST_BASE_URL: "https://staging-inngest.example.invalid",
+      SENTRY_ENABLED: "true",
+      SENTRY_DSN: "https://public@example.invalid/1",
+      NEXT_PUBLIC_SENTRY_DSN: "https://public@example.invalid/1",
     };
     expect(parseEnvironment(staging).APP_ENV).toBe("staging");
     expect(() =>

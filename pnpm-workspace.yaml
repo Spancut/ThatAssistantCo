@@ -1,4 +1,5 @@
 allowBuilds:
+  "@sentry/cli": true
   inngest-cli: true
   protobufjs: false
   sharp: true

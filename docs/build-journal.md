@@ -271,3 +271,60 @@ T001 — Claude Code governance. Do not begin until explicitly approved.
 
 - Next ticket: T003 — CI and observability baseline.
 - [x] Work stopped at the approved T002 boundary.
+
+## 2026-07-28 — T003 CI and observability baseline
+
+### Repository state and scope
+
+- Branch: `codex/t003-ci-observability-baseline`.
+- Starting commit: `31207fe15c47a523b89674e1fb312f00fca075f6`.
+- T002 draft PR #3 remained open, draft, and unmerged.
+- T002 was not reopened for Docker troubleshooting; all T003 tests are
+  infrastructure-independent or use safe degraded behavior.
+
+### Changes
+
+- Added immutable-SHA, least-privilege GitHub Actions quality/browser CI.
+- Added pinned Sentry Next.js instrumentation with deterministic content removal.
+- Added UUID correlation propagation and allowlisted one-line JSON logs.
+- Added a disabled-by-default, token-gated staging intentional-error route.
+- Added fictional-content unit tests and observability operator documentation.
+
+### Safety and external actions
+
+- No hosted Supabase/Sentry resource, provider setting, deployment, migration, or
+  production/staging service was changed.
+- No real credential or client data was used.
+- Sentry tracing, replay, default PII, request/user payloads, breadcrumbs, arbitrary
+  extras, stack variables, and source context are disabled or removed.
+
+### Validation and blocker
+
+- Deterministic validation and GitHub CI results are recorded in the T003 delivery
+  document and PR.
+- No Sentry/staging credentials are present, so the required external event
+  appearance and raw-content absence check remains pending. Exact execution and
+  teardown instructions are in `docs/observability.md`.
+- GitHub Actions passed the complete quality and browser job. Vercel failed
+  immediately with logs available only through authenticated provider inspection;
+  the same external condition existed on T001/T002 and no provider change was made.
+
+### Boundary
+
+- T003 is not fully accepted until staging Sentry evidence exists.
+- T010 is the next roadmap ticket but is not authorised by this work.
+- [x] Work stopped before T010.
+
+### External acceptance access check
+
+- Existing Vercel project/log access was verified without changing provider state.
+- Deployment failure was confirmed at output discovery: the project incorrectly
+  overrides the Output Directory to `public` for a Next.js build.
+- The minimal correction is to clear that override and retain the Next.js framework
+  output. It was not applied because the required provider-access gate was
+  incomplete.
+- No authorised Sentry organisation/project session, DSN, CLI authentication, or
+  event-inspection permission was available.
+- No account, project, environment variable, deployment, controlled error, or
+  provider setting was created or changed.
+- T003 remains externally pending and work stopped before T010.

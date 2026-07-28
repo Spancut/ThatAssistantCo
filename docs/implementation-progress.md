@@ -1,6 +1,6 @@
 # Implementation progress
 
-Percentages measure the active root against the governing VA Edition roadmap after T002. Archived Project Atlas code does not count as implementation.
+Percentages measure the active root against the governing VA Edition roadmap during T003. Archived Project Atlas code does not count as implementation.
 
 | Area | Progress | Justification |
 |---|---:|---|
@@ -27,12 +27,12 @@ Percentages measure the active root against the governing VA Edition roadmap aft
 | VA Workspace | 0% | Placeholder shell only; T012 and delivery UI not started |
 | Admin / settings | 0% | Not started |
 | Reporting / analytics | 0% | T037 not started |
-| Security | 15% | Repository secret/fixture boundaries, governance scanning, and dependency lock exist; application security tickets have not started |
-| Testing | 12% | T002 adds environment-isolation and health tests; Docker-backed, SQL/RLS, workflow, AI evaluation, accessibility, and release gates remain |
-| Infrastructure | 50% | Pinned local Supabase/Inngest configuration, environment guards, health checks, and operator docs exist; Docker runtime verification and T003 remain |
-| Deployment | 5% | Staging isolation/setup is documented without provisioning; preview failure logs and release automation remain external/T003 work |
+| Security | 20% | T003 adds deterministic telemetry minimisation and safe logging; identity, RLS, application permissions, and later security gates remain |
+| Testing | 15% | T003 adds privacy/correlation/logging/staging-gate tests and CI; SQL/RLS, workflow, AI evaluation, accessibility, and release gates remain |
+| Infrastructure | 65% | Local services plus CI, Sentry instrumentation, correlation IDs, and safe logs exist; staging Sentry acceptance remains external |
+| Deployment | 10% | Vercel access confirmed an incorrect `public` Output Directory override, but no provider change was made because authorised Sentry access remains unavailable; staging acceptance is pending |
 | Documentation/governance | 100% | T001 adds the concise root CLAUDE entry point, architecture governance, complete reusable templates, aligned agent rules, and safe deterministic checks |
 
 ## Weighted overall estimate
 
-**9% complete** across the 33 detailed tickets from T000 through T038: T000–T002 are complete, with T002's Docker-backed runtime checks explicitly blocked; no later ticket is claimed complete.
+**9% complete** across the 33 detailed tickets from T000 through T038: T000–T002 are complete; T003 implementation is complete but its external staging acceptance is pending, so it is not counted complete.
