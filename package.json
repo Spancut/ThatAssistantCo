@@ -2,6 +2,7 @@
   "name": "thatassistant-os",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "packageManager": "pnpm@11.17.0",
   "engines": {
     "node": ">=24.11.0 <25",
@@ -9,22 +10,32 @@
   },
   "scripts": {
     "dev": "next dev",
+    "dev:local": "node --env-file=.env.local scripts/dev-local.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "env:check": "node --env-file-if-exists=.env.local --experimental-strip-types scripts/validate-env.ts",
+    "env:check:example": "node --env-file=.env.example --experimental-strip-types scripts/validate-env.ts",
     "governance:check": "node scripts/check-governance.mjs",
+    "supabase:start": "supabase start",
+    "supabase:status": "supabase status",
+    "supabase:stop": "supabase stop --project-id thatassistant-os-local",
+    "supabase:reset:local": "supabase db reset --local",
+    "inngest:dev": "inngest dev --no-discovery -u http://localhost:3000/api/inngest",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "inngest": "4.13.0",
     "next": "16.2.12",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "zod": "4.4.3"
   },
   "devDependencies": {
     "@playwright/test": "1.61.1",
@@ -33,7 +44,9 @@
     "@types/react-dom": "19.2.3",
     "eslint": "9.39.5",
     "eslint-config-next": "16.2.12",
+    "inngest-cli": "1.38.1",
     "prettier": "3.9.6",
+    "supabase": "2.109.1",
     "typescript": "5.9.3",
     "vitest": "4.1.10"
   }

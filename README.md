@@ -6,9 +6,9 @@ ThatAssistant OS is a Human + AI client-delivery operating system for profession
 
 - Edition: **VA Edition**
 - Release: **Release 0 — Environment and governance**
-- Completed ticket: **T000 — Repository bootstrap**
-- Next roadmap ticket awaiting explicit approval: **T001 — Claude Code governance**
-- Product implementation has not begun beyond the approved T000 placeholder foundation.
+- Completed tickets: **T000–T002**
+- Next roadmap ticket awaiting explicit approval: **T003 — CI and observability baseline**
+- Product implementation remains the placeholder plus approved local/staging infrastructure.
 
 The previous Project Atlas implementation is archived on `archive/project-atlas-foundation` at commit `d316d9101f647549d73390a457eb59aa054f258c`. It is not part of the active implementation root.
 
@@ -28,6 +28,7 @@ The Word document governs build sequence and implementation detail unless a late
 - Node.js 24.11.x
 - Corepack
 - pnpm 11.17.0
+- Docker Desktop with Linux containers for local Supabase
 
 ## Local setup
 
@@ -35,7 +36,9 @@ The Word document governs build sequence and implementation detail unless a late
 $env:NODE_OPTIONS='--use-system-ca'
 corepack prepare pnpm@11.17.0 --activate
 corepack pnpm install --frozen-lockfile
-corepack pnpm dev
+Copy-Item .env.example .env.local
+corepack pnpm env:check
+corepack pnpm dev:local
 ```
 
 Open `http://localhost:3000`.
@@ -46,6 +49,8 @@ Open `http://localhost:3000`.
 
 ```powershell
 corepack pnpm format:check
+corepack pnpm env:check:example
+corepack pnpm governance:check
 corepack pnpm lint
 corepack pnpm typecheck
 corepack pnpm test
@@ -53,7 +58,9 @@ corepack pnpm test:e2e
 corepack pnpm build
 ```
 
-T000 contains one placeholder page and baseline unit/browser tests. It contains no authentication, database schema, AI, workflow, integration, or Release 1 feature.
+See `docs/local-development.md` for separate service commands and
+`docs/staging.md` for isolated staging setup. T002 contains no authentication,
+application schema, AI, domain workflow, integration, or Release 1 feature.
 
 ## Ticket discipline
 

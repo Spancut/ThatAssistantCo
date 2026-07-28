@@ -30,6 +30,10 @@ npm-debug.log*
 # vercel
 .vercel
 
+# local Supabase runtime metadata
+/supabase/.branches/
+/supabase/.temp/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

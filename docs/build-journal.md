@@ -228,3 +228,46 @@ T001 — Claude Code governance. Do not begin until explicitly approved.
 
 - Next ticket in the Word roadmap: T002 — Local/staging services.
 - [x] Work stopped at the approved T001 boundary.
+
+## 2026-07-28 — T002 Local/staging services
+
+### Repository state and scope
+
+- Branch: `codex/t002-local-staging-services`.
+- Starting commit: `6552ad55e73268c33210b0d33a2e4532ad399c25`.
+- T001 draft PR #2 remained open, draft, and unmerged.
+- Only T002 infrastructure was authorised; no T003 or Release 1 implementation was added.
+
+### Changes
+
+- Added pinned Supabase/Inngest/Zod dependencies and current local Supabase configuration.
+- Added a strict runtime environment model with local/staging/production isolation guards.
+- Added safe app/database/Supabase/Inngest health reporting.
+- Added the Inngest serve route and infrastructure-only health function.
+- Added local commands, combined launcher, staging instructions, and focused unit tests.
+
+### Security and external actions
+
+- No hosted project was created or linked, no remote migration ran, and no production
+  credential or real client data was used.
+- Local reset is explicitly scoped with `supabase db reset --local`.
+- Health results exclude URLs, connection strings, errors, and secrets.
+- Node package TLS remained strict; the Windows trusted certificate store was used
+  rather than disabling verification.
+
+### Blockers and validation
+
+- Docker is unavailable, blocking live Supabase start/status/stop and complete
+  multi-service health verification. Install/start Docker Desktop with Linux
+  containers and run the commands in `docs/local-development.md`.
+- Vercel CLI/log access is unavailable locally. GitHub reports the T001 Vercel check
+  failure and deployment URL but not the underlying log; exact attribution remains
+  an external read-only follow-up.
+- Final frozen install, governance, formatting, lint, type, unit, build, Inngest,
+  health, Chromium, diff, and credential-scan results are recorded in the T002
+  delivery document and Git/PR evidence.
+
+### Boundary and next ticket
+
+- Next ticket: T003 — CI and observability baseline.
+- [x] Work stopped at the approved T002 boundary.
