@@ -19,6 +19,14 @@ const rawEnvironmentSchema = z.object({
   INNGEST_ENABLED: booleanFromString,
   INNGEST_DEV: booleanFromString,
   INNGEST_BASE_URL: optionalUrl,
+  SENTRY_ENABLED: booleanFromString,
+  SENTRY_DSN: optionalUrl,
+  NEXT_PUBLIC_SENTRY_DSN: optionalUrl,
+  OBSERVABILITY_TEST_ENABLED: booleanFromString,
+  OBSERVABILITY_TEST_TOKEN: z.preprocess(
+    (value) => (value === "" ? undefined : value),
+    z.string().min(32).optional(),
+  ),
 });
 
 export type RuntimeEnvironment = z.infer<typeof rawEnvironmentSchema>;
@@ -80,12 +88,36 @@ export const environmentSchema = rawEnvironmentSchema.superRefine((environment, 
     addRequiredIssue(context, environment.INNGEST_BASE_URL, "INNGEST_BASE_URL");
   }
 
+  if (environment.SENTRY_ENABLED) {
+    addRequiredIssue(context, environment.SENTRY_DSN, "SENTRY_DSN");
+  }
+
+  if (environment.OBSERVABILITY_TEST_ENABLED) {
+    if (environment.APP_ENV !== "staging") {
+      context.addIssue({
+        code: "custom",
+        message: "the intentional observability test is allowed only in staging",
+        path: ["OBSERVABILITY_TEST_ENABLED"],
+      });
+    }
+    if (!environment.SENTRY_ENABLED) {
+      context.addIssue({
+        code: "custom",
+        message: "the intentional observability test requires Sentry",
+        path: ["SENTRY_ENABLED"],
+      });
+    }
+    addRequiredIssue(context, environment.OBSERVABILITY_TEST_TOKEN, "OBSERVABILITY_TEST_TOKEN");
+  }
+
   const localLike = ["local", "test"].includes(environment.APP_ENV);
   const urls = [
     environment.NEXT_PUBLIC_APP_URL,
     environment.SUPABASE_URL,
     environment.SUPABASE_DB_URL,
     environment.INNGEST_BASE_URL,
+    environment.SENTRY_DSN,
+    environment.NEXT_PUBLIC_SENTRY_DSN,
   ].filter((url): url is string => Boolean(url));
 
   if (localLike && urls.some((url) => !isLoopback(url))) {

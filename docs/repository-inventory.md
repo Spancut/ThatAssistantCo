@@ -1,10 +1,10 @@
 # Repository inventory
 
-Audit updated: 2026-07-28 after T002
+Audit updated: 2026-07-28 during T003
 
 Repository: `D:\ThatAssistantCo`
 
-Active branch: `codex/t002-local-staging-services`
+Active branch: `codex/t003-ci-observability-baseline`
 
 ## Current state
 
@@ -20,10 +20,10 @@ The active application remains the T000 placeholder shell with T002 local/stagin
 | Item | Classification | Purpose |
 |---|---|---|
 | `.git/` | KEEP | Git history, branches, and recoverable archive |
-| `.github/` | KEEP | Pull-request and numbered-ticket issue templates |
-| `app/` | KEEP | T000 placeholder plus T002 health and Inngest infrastructure routes |
+| `.github/` | KEEP | Templates plus T003 least-privilege CI |
+| `app/` | KEEP | Placeholder, health/Inngest routes, and gated T003 staging error route |
 | `docs/` | KEEP | Current specifications, audits, roadmap, decisions, templates, and build record |
-| `lib/` | KEEP | T002 environment, health, and safe Inngest infrastructure modules |
+| `lib/` | KEEP | Environment/health/Inngest plus T003 correlation, logging, Sentry privacy, and staging-test modules |
 | `scripts/` | KEEP | T001 governance validation plus T002 environment/local launch scripts |
 | `supabase/` | KEEP | T002 local-only Supabase CLI configuration; runtime metadata ignored |
 | `tests/` | KEEP | T000 baselines plus T002 environment-isolation and health unit tests |
@@ -52,6 +52,8 @@ The active application remains the T000 placeholder shell with T002 local/stagin
 - Architecture governance and model: `architecture.md`, `domain-model.md`.
 - Delivery records: `build-journal.md`, T000/T001 records, and `t002-local-staging-services.md`.
 - T002 operations: `environments.md`, `local-development.md`, and `staging.md`.
+- T003 operations and evidence: `observability.md` and
+  `t003-ci-observability-baseline.md`.
 - Approved templates: `docs/adr/000-template.md`, `docs/tickets/000-template.md`, `docs/build-journal-template.md`, `.github/` templates.
 - Complete supplied package, including `What you should do next.docx`.
 
@@ -96,6 +98,15 @@ The new T000 dependency install regenerates `node_modules/`, and validation rege
 - `lib/inngest/` and `app/api/inngest/route.ts`
 - `supabase/config.toml`
 - Environment/local-service package scripts and unit tests
+
+## T003 observability surface
+
+- `.github/workflows/ci.yml`
+- `instrumentation.ts`, `instrumentation-client.ts`, and Sentry runtime configs
+- `proxy.ts`
+- `lib/observability/`
+- `app/api/observability/test-error/route.ts`
+- Focused observability privacy tests
 
 ## Deferred / regenerate later
 

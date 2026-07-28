@@ -7,8 +7,10 @@ ThatAssistant OS is a Human + AI client-delivery operating system for profession
 - Edition: **VA Edition**
 - Release: **Release 0 — Environment and governance**
 - Completed tickets: **T000–T002**
-- Next roadmap ticket awaiting explicit approval: **T003 — CI and observability baseline**
-- Product implementation remains the placeholder plus approved local/staging infrastructure.
+- Active ticket: **T003 — CI and observability baseline** (implementation complete;
+  external staging Sentry acceptance pending)
+- Next roadmap ticket: **T010 — Identity and organisation schema**, not authorised
+  until T003 acceptance is complete and explicitly approved
 
 The previous Project Atlas implementation is archived on `archive/project-atlas-foundation` at commit `d316d9101f647549d73390a457eb59aa054f258c`. It is not part of the active implementation root.
 
@@ -59,7 +61,8 @@ corepack pnpm build
 ```
 
 See `docs/local-development.md` for separate service commands and
-`docs/staging.md` for isolated staging setup. T002 contains no authentication,
+`docs/staging.md` for isolated staging setup. See `docs/observability.md` for the
+T003 privacy boundary and staging acceptance procedure. The repository contains no authentication,
 application schema, AI, domain workflow, integration, or Release 1 feature.
 
 ## Ticket discipline

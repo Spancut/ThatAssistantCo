@@ -16,6 +16,11 @@ const environment = parseEnvironment({
   INNGEST_ENABLED: "true",
   INNGEST_DEV: "true",
   INNGEST_BASE_URL: "http://127.0.0.1:8288",
+  SENTRY_ENABLED: "false",
+  SENTRY_DSN: "",
+  NEXT_PUBLIC_SENTRY_DSN: "",
+  OBSERVABILITY_TEST_ENABLED: "false",
+  OBSERVABILITY_TEST_TOKEN: "",
 });
 
 describe("health report", () => {
