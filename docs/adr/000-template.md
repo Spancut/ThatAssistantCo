@@ -1,20 +1,20 @@
 # ADR-[NUMBER]: [TITLE]
 
-Status: Proposed | Accepted | Superseded
+Status: Proposed | Accepted | Rejected | Superseded
 
 Date:
 
-Decision owner:
+Owners:
+
+Related ticket:
+
+Governing requirements:
 
 ## Context
 
 What problem or conflict requires a decision?
 
-## Constraints
-
-Which blueprint, security, cost, or self-build constraints apply?
-
-## Options considered
+## Alternatives considered
 
 1.
 2.
@@ -28,10 +28,18 @@ What is being chosen?
 
 Benefits, costs, risks, and future work.
 
+## Security and privacy impact
+
+## Tenant and client isolation impact
+
+## AI safety impact
+
+## Migration or rollback considerations
+
 ## Validation
 
 How will we know the decision works?
 
-## Supersedes / superseded by
+## Superseded ADRs
 
 Links if applicable.

@@ -1,10 +1,10 @@
 # Repository inventory
 
-Audit updated: 2026-07-28 after T000
+Audit updated: 2026-07-28 after T001
 
 Repository: `D:\ThatAssistantCo`
 
-Active branch: `codex/t000-repository-bootstrap`
+Active branch: `codex/t001-claude-code-governance`
 
 ## Current state
 
@@ -23,12 +23,14 @@ The active application is only the T000 placeholder shell. It contains no authen
 | `.github/` | KEEP | Pull-request and numbered-ticket issue templates |
 | `app/` | KEEP | New T000-only Next.js placeholder layout/page/styles |
 | `docs/` | KEEP | Current specifications, audits, roadmap, decisions, templates, and build record |
+| `scripts/` | KEEP | T001 read-only deterministic governance validation |
 | `tests/` | KEEP | New T000 unit and browser baseline only |
 | `thatassistant-os-project-docs-v1.1/` | KEEP | Supplied authoritative package and governing Word document |
 | `.env.example` | KEEP | Non-secret T000 public URL placeholder only |
 | `.gitignore` | KEEP | Dependency, build, test, environment, and secret-file exclusions |
 | `.prettierignore`, `.prettierrc.json` | KEEP | T000 formatting configuration |
 | `AGENTS.md` | KEEP | Repository authority, safety, and delivery rules |
+| `CLAUDE.md` | KEEP | Concise coding-agent entry point aligned with the governing roadmap |
 | `CONTRIBUTING.md` | KEEP | Concise ticket and safety contribution workflow |
 | `README.md` | KEEP | Product/stage/authority/setup/checks/next-ticket entry point |
 | `eslint.config.mjs` | KEEP | T000 lint baseline |
@@ -45,8 +47,9 @@ The active application is only the T000 placeholder shell. It contains no authen
 - Source hierarchy and decisions: `source-of-truth-index.md`, `open-decisions.md`.
 - Product and scope: `product-summary.md`, `domain-model.md`, `release-1-scope.md`.
 - Audit and planning: traceability matrix, progress, legacy audit, roadmap, gap analysis, readiness review.
-- Delivery records: `build-journal.md`, `t000-repository-bootstrap.md`.
-- Approved templates: `docs/adr/000-template.md`, `docs/tickets/000-template.md`, `.github/` templates.
+- Architecture governance and model: `architecture.md`, `domain-model.md`.
+- Delivery records: `build-journal.md`, `t000-repository-bootstrap.md`, `t001-claude-code-governance.md`.
+- Approved templates: `docs/adr/000-template.md`, `docs/tickets/000-template.md`, `docs/build-journal-template.md`, `.github/` templates.
 - Complete supplied package, including `What you should do next.docx`.
 
 ## New T000 application and tests
@@ -87,7 +90,8 @@ The new T000 dependency install regenerates `node_modules/`, and validation rege
 
 - Domain modules, Supabase directories, Inngest, prompts, schemas, and domain test suites are created only by their numbered tickets.
 - Product assets and design-system components are deferred to the relevant UI ticket.
-- Root `CLAUDE.md`, detailed architecture docs, hooks, and full governance package remain T001 work. T000 includes only templates explicitly requested by the approved bootstrap task.
+- Local/staging services, environment validation, health checks, Supabase, and Inngest remain T002 work.
+- No Git hook is configured. T001 uses an explicit read-only `pnpm governance:check` command.
 
 ## Obsolete historical references
 
