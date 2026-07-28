@@ -1,6 +1,6 @@
 # Implementation progress
 
-Percentages measure the active root against the governing VA Edition roadmap after T000. Archived Project Atlas code does not count as implementation.
+Percentages measure the active root against the governing VA Edition roadmap after T001. Archived Project Atlas code does not count as implementation.
 
 | Area | Progress | Justification |
 |---|---:|---|
@@ -27,12 +27,12 @@ Percentages measure the active root against the governing VA Edition roadmap aft
 | VA Workspace | 0% | Placeholder shell only; T012 and delivery UI not started |
 | Admin / settings | 0% | Not started |
 | Reporting / analytics | 0% | T037 not started |
-| Security | 10% | Repository secret/fixture boundaries and dependency lock exist; application security tickets have not started |
+| Security | 15% | Repository secret/fixture boundaries, governance scanning, and dependency lock exist; application security tickets have not started |
 | Testing | 10% | T000 unit/Playwright baselines pass; domain, SQL/RLS, workflow, AI evaluation, accessibility, and release gates remain |
-| Infrastructure | 15% | Pinned Node/pnpm/app/check baseline exists; T002/T003 services, CI, staging, and observability remain |
+| Infrastructure | 20% | Pinned Node/pnpm/app/check baseline and read-only governance validation exist; T002/T003 services, CI, staging, and observability remain |
 | Deployment | 0% | T002/T003 and release-management evidence not started |
-| Documentation/governance | 80% | Authority/audit/journal/templates are present; T001 root CLAUDE, architecture package, ADR process, and safe checks remain |
+| Documentation/governance | 100% | T001 adds the concise root CLAUDE entry point, architecture governance, complete reusable templates, aligned agent rules, and safe deterministic checks |
 
 ## Weighted overall estimate
 
-**3% complete** across the 33 detailed tickets from T000 through T038: T000 is complete and no later ticket is claimed complete.
+**6% complete** across the 33 detailed tickets from T000 through T038: T000 and T001 are complete; no later ticket is claimed complete.

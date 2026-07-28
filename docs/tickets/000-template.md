@@ -4,7 +4,29 @@ Release:
 
 Status:
 
-Specification sections:
+## Authorised scope
+
+Only this ticket may be implemented. Stop when its acceptance criteria are satisfied.
+
+## Source requirements
+
+Governing specification sections and supporting documents:
+
+## Prerequisites
+
+## Dependencies
+
+## Affected components
+
+## Data and tenancy impact
+
+How are `tenant_id`, `client_id`, storage, retrieval, jobs, caches, and tests affected?
+
+## Security and permissions impact
+
+## AI and source-grounding impact
+
+## Prohibited work
 
 ## User outcome
 
@@ -12,16 +34,27 @@ Specification sections:
 
 ## Out of scope
 
-## Data and permissions
-
-## Implementation requirements
+## Implementation steps
 
 ## Acceptance criteria
 
-## Tests
+## Tests required
 
-## Manual verification
+## Documentation updates
 
-## Security review
+## Rollback considerations
 
-## Build journal
+## Stop condition
+
+Stop after validation, documentation, journal update, commit, push, and the requested handoff. Do not begin the next ticket.
+
+## Completion report
+
+- Files changed:
+- Migrations or architecture decisions:
+- Validation:
+- Security checks:
+- Deviations or blockers:
+- Final commit and PR:
+- Next authorised ticket:
+- Ticket boundary confirmed:

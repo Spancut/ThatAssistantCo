@@ -22,13 +22,16 @@
 
 - Work on one approved ticket or documentation task at a time. Do not begin the next ticket without explicit approval.
 - `thatassistant-os-project-docs-v1.1/What you should do next.docx` is the governing implementation roadmap unless a later document explicitly supersedes a section.
+- Read the governing Word document, this file, the source-of-truth index, and the approved ticket before implementation. `CLAUDE.md` is the concise coding-agent entry point and must remain aligned with these rules.
 - Before implementation, confirm that blocking items in `docs/open-decisions.md` relevant to the approved ticket are resolved.
+- Follow the numbered roadmap in order unless Cresta explicitly authorizes a different ticket; never reorder it for convenience.
 - Prefer vertical slices that preserve the full Request-to-Delivery control loop.
 - Keep workflows explicit, versioned, recoverable, idempotent, and auditable.
 - Use typed boundaries and runtime validation for requests, events, stored structured data, and AI output.
 - Add tests proportionate to risk: domain and validation tests, tenant/client isolation tests, workflow transition and idempotency tests, AI evaluations, and critical browser journeys.
 - Do not weaken security controls, skip validation, invent requirements, or silently broaden scope to make a ticket pass.
 - Do not restore or copy archived legacy files into the active root without explicit ticket-level authorization and review.
+- Stop at the approved ticket boundary and report blockers rather than inventing requirements or bypassing controls.
 
 ## Documentation and handoff
 

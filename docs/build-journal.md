@@ -176,3 +176,55 @@ TypeScript 7.0.2 and ESLint 10.7.0 were evaluated but rejected because the curre
 ### Next approved ticket
 
 T001 — Claude Code governance. Do not begin until explicitly approved.
+
+## 2026-07-28 — T001 Claude Code governance
+
+### Repository state
+
+- Branch: `codex/t001-claude-code-governance`.
+- Starting commit: `ec49106e64763f0d9bb1c1b8795f283d069e726a`.
+- T000 draft PR #1 remained open, draft, and unmerged.
+- Project Atlas archive remained available locally and remotely at `archive/project-atlas-foundation` / `d316d9101f647549d73390a457eb59aa054f258c`.
+- Final commit and stacked draft PR are recorded by Git/GitHub delivery metadata for this entry.
+
+### Documents reviewed
+
+- Governing Word authority, build, completion, and complete T001 sections.
+- `AGENTS.md`, source-of-truth index, open decisions, roadmap, existing templates, and T000 records.
+- Supplied Human + AI Organisation, Technical Architecture, AI Orchestration, and Security/Permissions specifications.
+
+### Authorised scope
+
+- T001 governance outputs only.
+- T002 services and all Release 1 feature work were explicitly excluded.
+
+### Changes
+
+- Added concise root `CLAUDE.md` and focused architecture governance.
+- Completed the ADR and implementation-ticket templates.
+- Added a separate reusable build-journal template without replacing this journal.
+- Added a read-only deterministic governance check and package command.
+- Aligned `AGENTS.md` and updated T001 evidence, progress, traceability, and inventory.
+- No migration or production architecture change was made; no ADR was necessary.
+
+### Validation and security
+
+- Frozen pnpm install passed.
+- Required governance-file, branch-name, hosted-metadata, common-secret-pattern, and local-hook checks passed.
+- Formatting, lint, and type checking passed.
+- Unit test passed, 1/1.
+- Production build passed with only `/` and the framework `_not-found` route.
+- Local Playwright Chromium baseline passed, 1/1.
+- `git diff --check` passed.
+- Manual review confirmed that no hook or check deletes, commits, pushes, merges, deploys, migrates, contacts providers, sends messages, or uses production resources.
+
+### Exceptions and follow-up
+
+- No product or architecture deviation.
+- No unresolved T001 blocker.
+- T002 remains unstarted and requires explicit approval.
+
+### Boundary and next ticket
+
+- Next ticket in the Word roadmap: T002 — Local/staging services.
+- [x] Work stopped at the approved T001 boundary.
