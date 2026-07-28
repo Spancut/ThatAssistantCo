@@ -1,6 +1,6 @@
 # Release 1 scope
 
-This document describes the product boundary, not an implementation authorization. “Release 1” means the Blueprint foundation and daily-delivery loop. Pending OD-004, the candidate Part 11 labels its two internal increments Release 1A and Release 1B and places environment/governance work in Release 0.
+This document describes the product boundary. The governing Part 11 roadmap authorizes controlled, one-ticket-at-a-time implementation when a ticket is explicitly approved. “Release 1” means the Blueprint foundation and daily-delivery loop; Part 11 labels its two internal increments Release 1A and Release 1B and places environment/governance work in Release 0.
 
 ## Included
 
@@ -93,8 +93,6 @@ Release 1 is successful only when:
 
 ## Blockers before implementation
 
-1. OD-001: approve or reject the supplied Word Part 11.
-2. OD-003: ratify the technology stack.
-3. OD-005: choose a recoverable disposition for the old Project Atlas repository contents.
-4. OD-006: resolve first-class storage for exceptions/evidence/completion before affected migrations.
-5. Confirm the first implementation ticket and its acceptance criteria after the above decisions. No production ticket is approved by this documentation task.
+1. OD-005: choose a recoverable disposition for the old Project Atlas repository contents before T000 changes the repository foundation.
+2. OD-006: resolve first-class storage for exceptions/evidence/completion before affected migrations.
+3. Confirm the first implementation ticket and its acceptance criteria. This traceability task does not itself approve production work.

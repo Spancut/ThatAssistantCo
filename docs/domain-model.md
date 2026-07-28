@@ -3,7 +3,7 @@
 This is a conceptual model only. It does not authorize schema or migration work. Status labels are:
 
 - **Confirmed:** directly required by the Blueprint and supporting specifications.
-- **Likely:** strongly implied by workflows or the candidate Part 11.
+- **Likely:** strongly implied by workflows or the governing Part 11 roadmap.
 - **Unresolved:** representation or lifecycle requires a decision.
 
 ## Identity, tenancy, and access
@@ -13,7 +13,7 @@ This is a conceptual model only. It does not authorize schema or migration work.
 | Tenant / organisation | Confirmed | Security, billing, policy, and ownership boundary. Owns memberships, clients, workflows, and operational records. |
 | User / profile | Confirmed | A human identity. Participates in tenants through memberships. |
 | Membership | Confirmed | Links user to tenant with role and lifecycle state. |
-| Role / permission policy | Confirmed | Owner, member, and viewer are named in the candidate Part 11; deterministic permissions combine role, membership, client access, sensitivity, capability, and action policy. Exact matrix awaits Part 11 approval. |
+| Role / permission policy | Confirmed | Owner, member, and viewer are named in the governing Part 11; deterministic permissions combine role, membership, client access, sensitivity, capability, and action policy. Exact capabilities are finalized and tested in the relevant identity/access tickets. |
 | Client-team access | Confirmed | Links an authorized membership/user to specific clients. Required before retrieval or action. |
 
 Every client-owned entity must include tenant and client scope. Tenant/client scope is validated server-side and enforced in storage/query policy, not inferred from UI routes or AI.
@@ -93,4 +93,4 @@ Relationships: drafts link to the request/workflow and supporting evidence. An e
 
 ## Model questions before schema work
 
-OD-001/003 must establish the approved implementation spec and stack. OD-006 must decide the storage shape for exceptions, evidence, deliverables, and completion verification. Retention, deletion, sensitivity tiers, role capabilities, client-access inheritance, and cross-client aggregate reporting also require ticket-level design and security review before migrations.
+The governing Part 11 establishes the implementation roadmap and stack. OD-006 must decide the storage shape for exceptions, evidence, deliverables, and completion verification. Retention, deletion, sensitivity tiers, role capabilities, client-access inheritance, and cross-client aggregate reporting also require ticket-level design and security review before affected migrations.

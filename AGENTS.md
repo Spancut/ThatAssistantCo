@@ -21,7 +21,8 @@
 ## Delivery discipline
 
 - Work on one approved ticket or documentation task at a time. Do not begin the next ticket without explicit approval.
-- Before implementation, confirm that blocking items in `docs/open-decisions.md` are resolved and that the governing Part 11 status is explicit.
+- `thatassistant-os-project-docs-v1.1/What you should do next.docx` is the governing implementation roadmap unless a later document explicitly supersedes a section.
+- Before implementation, confirm that blocking items in `docs/open-decisions.md` relevant to the approved ticket are resolved.
 - Prefer vertical slices that preserve the full Request-to-Delivery control loop.
 - Keep workflows explicit, versioned, recoverable, idempotent, and auditable.
 - Use typed boundaries and runtime validation for requests, events, stored structured data, and AI output.

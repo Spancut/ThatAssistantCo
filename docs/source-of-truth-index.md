@@ -1,6 +1,6 @@
 # Source-of-truth index
 
-Status: initialized 2026-07-28. This index governs documentation discovery only; it does not authorize production implementation.
+Status: updated 2026-07-28 after the product owner designated the supplied Word document as the governing implementation roadmap.
 
 ## Authority hierarchy
 
@@ -8,7 +8,7 @@ Use the narrowest applicable source at the highest available level:
 
 1. Explicit written product-owner decisions recorded after 2026-07-28.
 2. `thatassistant-os-project-docs-v1.1/docs/10-blueprint-revision-1.1.md` for product intent and revision 1.1 decisions.
-3. An explicitly approved Part 11 build specification for implementation detail. The supplied Word document is a candidate, but its approval and package status conflict is unresolved in OD-001.
+3. `thatassistant-os-project-docs-v1.1/What you should do next.docx` for implementation detail. The product owner explicitly made it governing on 2026-07-28.
 4. Topic documents `01`–`09`, with security and AI constraints overriding convenience but not the Blueprint.
 5. Documentation-phase instructions in `11A-documentation-setup.md`, this initialized documentation set, and repository `AGENTS.md`.
 6. Templates and bootstrap prompts, which guide format and process but cannot create product requirements.
@@ -26,18 +26,18 @@ If sources at any level conflict, do not guess. Record the conflict in `docs/ope
 | `.../docs/01-product-foundation.md` | Supporting specification | User, problem, promise, principles, non-goals | Topic authority beneath Blueprint | Depends on Blueprint | Product foundation |
 | `.../docs/02-product-scope.md` | Supporting specification | Seven operating pillars, first-release breadth, expansion boundaries | Topic authority beneath Blueprint | Release naming differs in granularity from Word Part 11 (OD-004) | Scope and sequencing |
 | `.../docs/03-human-ai-organisation.md` | Supporting specification | Human authority and logical AI specialist roles | Topic authority beneath Blueprint | Consistent with security and AI docs | Roles, delegation, human control |
-| `.../docs/04-workflows.md` | Supporting specification | Shared states, universal pattern, workflow catalogue, first vertical slice | Topic authority beneath Blueprint | Word Part 11 uses a more specific Release 1 state model; mapping needs approval with Part 11 (OD-001) | Workflows, waiting, completion |
+| `.../docs/04-workflows.md` | Supporting specification | Shared states, universal pattern, workflow catalogue, first vertical slice | Topic authority beneath Blueprint | Word Part 11 supplies the governing Release 1 implementation state model | Workflows, waiting, completion |
 | `.../docs/05-ux-specification.md` | Supporting specification | Navigation, core screens, activation and exception states | Topic authority beneath Blueprint | Depends on workflow and role model | UX and information architecture |
-| `.../docs/06-technical-architecture.md` | Supporting specification | Modular architecture, data domains, workflow and action principles | Topic authority beneath Blueprint | Word Part 11 fixes concrete technology while package says that decision is pending (OD-003) | Architecture, data, integrations |
-| `.../docs/07-ai-orchestration.md` | Supporting specification | AI work orders, context, schemas, evidence, uncertainty and evaluations | Topic authority beneath Blueprint | Provider choice in Word Part 11 is not approved by package status (OD-003) | AI orchestration and evaluation |
+| `.../docs/06-technical-architecture.md` | Supporting specification | Modular architecture, data domains, workflow and action principles | Topic authority beneath Blueprint | Word Part 11 now governs concrete technology choices | Architecture, data, integrations |
+| `.../docs/07-ai-orchestration.md` | Supporting specification | AI work orders, context, schemas, evidence, uncertainty and evaluations | Topic authority beneath Blueprint | Word Part 11 governs the Anthropic provider implementation | AI orchestration and evaluation |
 | `.../docs/08-security-permissions.md` | Supporting specification | Roles, approval binding, privacy, injection defenses, release blockers | Binding safety constraint beneath Blueprint | Must be reconciled with any implementation spec | Security, permissions, approvals |
 | `.../docs/09-validation-commercialisation.md` | Supporting specification | Hypotheses, pilot design, validation and packaging | Topic authority beneath Blueprint | Commercial claims remain unproven | Pilot, evidence, commercialization |
 | `.../docs/10-blueprint-revision-1.1.md` | Authoritative specification | Revision 1.1 product blueprint and release strategy | Highest supplied product authority | Must prevail over implementation detail | Product, scope, release roadmap, safety |
-| `.../docs/11-build-specification/README.md` | Supporting placeholder | Planned Part 11 section map and authorization warning | Governing phase warning unless superseded explicitly | Conflicts with full Word Part 11 (OD-001) | Build-spec process |
+| `.../docs/11-build-specification/README.md` | Historical placeholder | Planned Part 11 section map and former authorization warning | Superseded by the product-owner approval of the full Word Part 11 | Retained as package history | Build-spec process |
 | `.../docs/11-build-specification/11A-documentation-setup.md` | Authoritative instruction | Completed documentation setup phase and permanent rules | Authoritative for Part 11A only | Does not authorize production code | Documentation initialization |
 | `.../prompts/00-claude-code-bootstrap.md` | Template | Readiness-review prompt for a future coding agent | Template only | Says no stack decisions and no code | Bootstrap/readiness |
 | `.../tests/fixtures/README.md` | Template | Rules for fictional, anonymized evaluation fixtures | Governing fixture safety when tests begin | No current fixtures supplied | Test data safety |
-| `.../What you should do next.docx` | Unresolved candidate specification | Complete 27-section Part 11 build specification, fixed stack, schema, workflows, releases R0–R6 and tickets T000–T038 | Claims “governing build specification,” but is not listed in the manifest and conflicts with package phase status | OD-001, OD-002, OD-003, OD-004; do not implement from it yet | Full implementation detail |
+| `.../What you should do next.docx` | Authoritative implementation roadmap | Complete 27-section Part 11 build specification, fixed stack, schema, workflows, releases R0–R6 and tickets T000–T038 | Governing for implementation unless explicitly superseded | Product-owner instruction resolves former OD-001 and OD-003; hierarchy interpretation remains recorded | Full implementation detail |
 | `.../.DS_Store` | Historical metadata | macOS folder metadata; no specification content | None | Omitted from manifest; Git-ignored | None |
 | `.../docs/.DS_Store` | Historical metadata | macOS folder metadata; no specification content | None | Omitted from manifest; Git-ignored | None |
 

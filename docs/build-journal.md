@@ -59,3 +59,56 @@ Only documentation and agent instructions were changed. No production source, mi
 ### Next task
 
 Product-owner decision review for OD-001, OD-003, and OD-005. After those decisions are recorded, approve one documentation or implementation ticket explicitly. Do not start T000 or any production ticket yet.
+
+## 2026-07-28 — Specification-to-repository traceability audit
+
+### Authority update
+
+- Product owner designated `thatassistant-os-project-docs-v1.1/What you should do next.docx` as the governing implementation roadmap.
+- OD-001 and OD-003 were marked resolved.
+- Earlier “candidate Part 11” and stack-approval language was corrected in current control documents.
+
+### Repository state
+
+- Started from `fb46629` on `codex/va-edition-spec-initialisation`.
+- Created `codex/specification-traceability`.
+- Audited all current and historical documentation, all tracked source/config/test/migration groups, and ignored/generated categories.
+- No production source, configuration, dependency, test, migration, asset, or script was modified.
+
+### Files added
+
+- `docs/repository-inventory.md`
+- `docs/requirement-traceability-matrix.md`
+- `docs/implementation-progress.md`
+- `docs/legacy-audit.md`
+- `docs/build-roadmap.md`
+- `docs/gap-analysis.md`
+- `docs/readiness-review.md`
+
+### Files corrected
+
+- `AGENTS.md`
+- `docs/source-of-truth-index.md`
+- `docs/open-decisions.md`
+- `docs/domain-model.md`
+- `docs/release-1-scope.md`
+- `docs/build-journal.md`
+
+### Audit results
+
+- 98 significant requirements traced.
+- 8 complete, 34 partially complete, 40 not started, 2 blocked, 10 superseded, 0 unknown.
+- Weighted Release 0 + Release 1 progress estimate: 14%.
+- Highest risks: mixed legacy repository, tenant/client isolation, canonical schema, workflow/idempotency, governed Client Brain, AI context/source safety, completion evidence, and missing release gates.
+- Recommended first controlled implementation ticket: T000, after explicit approval of OD-005 archive/recovery handling.
+
+### Checks
+
+- `npm test -- --run`: 48/48 legacy unit tests passed.
+- `npm run typecheck`: passed.
+- `npm run lint`: passed.
+- Browser tests were not run because they use live hosted services and the legacy OpenAI path; this audit did not authorize external test side effects.
+
+### Next task
+
+Approve and execute a recoverable Project Atlas archive strategy, then explicitly authorize T000. Do not begin feature work before the clean repository bootstrap.
